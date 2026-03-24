@@ -17,6 +17,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const regex = "^[a-zA-Z\\s]*$";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -88,6 +89,7 @@ export default function RegisterPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                pattern={regex}
                 className="border-zinc-700 bg-zinc-800/50 text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-emerald-500/50"
               />
             </div>
