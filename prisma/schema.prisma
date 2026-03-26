@@ -29,6 +29,9 @@ model Transaction {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([id])
   @@map("transaction")
 }
@@ -44,6 +47,8 @@ model User {
   plan          Plan      @default(FREE)
   sessions      Session[]
   accounts      Account[]
+
+  transactions Transaction[]
 
   @@unique([email])
   @@map("user")

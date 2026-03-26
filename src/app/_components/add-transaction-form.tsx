@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { createTransaction } from "@/app/actions/transaction";
+import { useUser } from "@/utils/user-global";
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface AddTransactionModalProps {
 }
 
 export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProps) {
+  const {user } = useUser();
   const [type, setType] = useState("expense");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [amount, setAmount] = useState("");
@@ -56,6 +58,7 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
     setIsSubmitting(true);
     try {
       const result = await createTransaction({
+        userId:user!.id,
         amount: parseFloat(amount),
         name,
         type,

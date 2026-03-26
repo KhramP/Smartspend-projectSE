@@ -10,10 +10,11 @@ interface CreateTransactionInput {
   category: string;
   date: string;
   note?: string;
+  userId: string;
 }
 
 export async function createTransaction(input: CreateTransactionInput) {
-  const { amount, name, type, category, date, note } = input;
+  const { amount, name, type, category, date, note, userId } = input;
 
   if (!amount || !name || !type || !category || !date) {
     return { error: "กรุณากรอกข้อมูลให้ครบถ้วน" };
@@ -30,6 +31,7 @@ export async function createTransaction(input: CreateTransactionInput) {
       name,
       type,
       category,
+      userId,
       date: new Date(date),
       note: note || null,
     },
@@ -38,8 +40,9 @@ export async function createTransaction(input: CreateTransactionInput) {
   return { success: true, transaction };
 }
 
-export async function getRecentTransactions() {
+export async function getRecentTransactions({ userId }: { userId: string }) {
   const transactions = await prisma.transaction.findMany({
+    where: { userId: userId },
     orderBy: { date: "desc" },
     take: 5,
   });
