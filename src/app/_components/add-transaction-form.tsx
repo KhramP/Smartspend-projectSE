@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { createTransaction } from "@/app/actions/transaction";
 import { useUser } from "@/utils/user-global";
 
@@ -10,7 +11,8 @@ interface AddTransactionModalProps {
 }
 
 export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProps) {
-  const {user } = useUser();
+  const { user } = useUser();
+  const router = useRouter();
   const [type, setType] = useState("expense");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [amount, setAmount] = useState("");
@@ -58,7 +60,7 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
     setIsSubmitting(true);
     try {
       const result = await createTransaction({
-        userId:user!.id,
+        userId: user!.id,
         amount: parseFloat(amount),
         name,
         type,
@@ -74,6 +76,7 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
 
       resetForm();
       onClose();
+      router.refresh();
     } catch {
       setError("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
     } finally {

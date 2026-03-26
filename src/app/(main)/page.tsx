@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { DashBoard } from "../_components/dashboard";
-import { getRecentTransactions } from "../actions/transaction";
+import { getDashboardData, getRecentTransactions } from "../actions/transaction";
 import { headers } from "next/headers";
 
 export default async function Home() {
@@ -8,10 +8,11 @@ export default async function Home() {
   const user = session?.user;
 
   const transactions = await getRecentTransactions({ userId: user!.id });
+  const dashboardData = await getDashboardData({ userId: user!.id });
 
   return (
     <div className="px-4 sm:px-6 lg:px-10 mt-5 pt-14 md:pt-5">
-      <DashBoard transactions={transactions} />
+      <DashBoard transactions={transactions} data={dashboardData} />
     </div>
   );
 }

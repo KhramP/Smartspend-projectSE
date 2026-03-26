@@ -2,15 +2,24 @@
 
 import { Transaction } from "@/generated/prisma/client";
 
-export function DashBoard({ transactions }: { transactions: Transaction[] }) {
-  const categories = [
-    { name: "อาหาร", icon: "🍜", amount: "฿5,407" },
-    { name: "เดินทาง", icon: "🚗", amount: "฿3,210" },
-  ];
-  // [
-  //   { date: "12 Mar 2026", name: "ข้าวกลางวัน", category: "อาหาร", amount: "฿120" },
-  //   { date: "11 Mar 2026", name: "ข้าวกลางวัน", category: "อาหาร", amount: "฿120" },
-  // ];
+export function DashBoard({
+  transactions,
+  data,
+}: {
+  transactions: Transaction[];
+  data: {
+    thisMonthIncome: number;
+    thisMonthExpense: number;
+    balance: number;
+    todayExpense: number;
+    eachCategorySpendingThisMonth: { category: string; amount: number }[];
+  };
+}) {
+  const categories = data.eachCategorySpendingThisMonth.map((cat) => ({
+    name: cat.category,
+    icon: "🍜",
+    amount: `฿${cat.amount}`,
+  }));
 
   return (
     <div>
@@ -21,15 +30,15 @@ export function DashBoard({ transactions }: { transactions: Transaction[] }) {
       <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         <div className="rounded-2xl border border-border bg-card p-6 backdrop-blur-xl">
           <p className="mb-2.5 text-sm text-muted-foreground">รายรับเดือนนี้</p>
-          <h3 className="text-3xl font-semibold text-foreground">$35,000</h3>
+          <h3 className="text-3xl font-semibold text-foreground">${data.thisMonthIncome}</h3>
         </div>
         <div className="rounded-2xl border border-border bg-card p-6 backdrop-blur-xl">
           <p className="mb-2.5 text-sm text-muted-foreground">รายจ่ายเดือนนี้</p>
-          <h3 className="text-3xl font-semibold text-foreground">$28,500</h3>
+          <h3 className="text-3xl font-semibold text-foreground">${data.thisMonthExpense}</h3>
         </div>
         <div className="rounded-2xl border border-border bg-card p-6 backdrop-blur-xl">
           <p className="mb-2.5 text-sm text-muted-foreground">ยอดคงเหลือ</p>
-          <h3 className="text-3xl font-semibold text-foreground">$6,500</h3>
+          <h3 className="text-3xl font-semibold text-foreground">${data.balance}</h3>
         </div>
         <div className="rounded-2xl border border-border bg-card p-6 backdrop-blur-xl">
           <p className="mb-2.5 text-sm text-muted-foreground">หมวดหมู่ยอดนิยม</p>
