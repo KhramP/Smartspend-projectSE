@@ -13,7 +13,7 @@ import { useState } from "react";
 
 const SIDEBAR_LINKS = [
   { href: "/", icon: BarChart, label: "ภาพรวม" },
-  { href: "/expenses", icon: Book, label: "รายการใช้จ่าย" },
+  { href: "/transaction", icon: Book, label: "รายการใช้จ่าย" },
   { href: "/category", icon: BookCopy, label: "หมวดหมู่" },
 ] as const;
 
