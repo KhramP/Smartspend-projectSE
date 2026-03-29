@@ -1,70 +1,163 @@
 "use client";
 
-import "../../_components/GlobalLayout.css";
+
+const THEME_COLOR = "#2563be"; 
+const BG_COLOR = "#f4f4f5";   
+const CARD_BG = "#ffffff";     
+const BORDER_COLOR = "#e4e4e7";
+const TEXT_MAIN = "#09090b";   
+const TEXT_SUB = "#71717a";   
 
 export default function SettingsPage() {
+  const cardStyle = {
+    background: CARD_BG,
+    border: `1px solid ${BORDER_COLOR}`,
+    borderRadius: "24px",
+    padding: "32px",
+    boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.05)",
+  };
+
+  const inputStyle = {
+    width: "100%",
+    background: BG_COLOR,
+    border: `1px solid ${BORDER_COLOR}`,
+    borderRadius: "12px",
+    padding: "12px 16px",
+    color: TEXT_MAIN,
+    fontSize: "14px",
+    outline: "none",
+    boxSizing: "border-box" as const,
+    marginTop: "8px",
+  };
+
   return (
-    <div className="p-10">
-      <div className="grid grid-cols-1 gap-8 max-w-4xl">
+    <div style={{ padding: "40px", background: BG_COLOR, minHeight: "100vh", color: TEXT_MAIN, fontFamily: "inherit" }}>
+      
+      <div style={{ marginBottom: "32px" }}>
+        <h1 style={{ fontSize: "32px", fontWeight: 800, letterSpacing: "-1px" }}>การตั้งค่า</h1>
+        <p style={{ color: TEXT_SUB, fontSize: "14px" }}>จัดการข้อมูลส่วนตัวและปรับแต่งการใช้งานแอปพลิเคชัน</p>
+      </div>
+ 
+      <div style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "800px" }}>
         
-        {/* Profile Settings */}
-        <section className="glass-card p-8">
-          <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            จัดการโปรไฟล์
+        {/* Profile Section */}
+        <div style={cardStyle}>
+          <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
+            <span style={{ fontSize: "20px" }}>👤</span> จัดการโปรไฟล์
           </h3>
-          <div className="space-y-6">
-            <div className="flex items-center gap-6">
-              <div className="w-20 h-20 rounded-full bg-gray-700 border-2 border-dashed border-gray-500 flex items-center justify-center text-gray-400">
-                Avatar
-              </div>
-              <button className="btn-premium" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid #555' }}>
+          
+          <div style={{ display: "flex", alignItems: "center", gap: "24px", marginBottom: "32px" }}>
+            <div style={{
+              width: "80px", height: "80px", borderRadius: "50%",
+              background: "#f1f5f9", border: `2px dashed ${BORDER_COLOR}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "32px",
+            }}>
+              🙂
+            </div>
+            <div>
+              <button style={{
+                padding: "10px 20px", background: "#2563eb",
+                border: "none", borderRadius: "12px",
+                color: "#fff", fontSize: "13px", fontWeight: 600, cursor: "pointer",
+                marginBottom: "8px", display: "block"
+              }}>
                 เปลี่ยนรูปโปรไฟล์
               </button>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="form-group">
-                <label>ชื่อแสดงผล</label>
-                <input type="text" className="form-input" defaultValue="John K." />
-              </div>
-              <div className="form-group">
-                <label>อีเมล</label>
-                <input type="email" className="form-input" defaultValue="john@example.com" disabled />
-              </div>
+              <p style={{ color: TEXT_SUB, fontSize: "12px" }}>รองรับไฟล์ JPG, PNG ขนาดไม่เกิน 2MB</p>
             </div>
           </div>
-        </section>
 
-        {/* Preferences */}
-        <section className="glass-card p-8">
-          <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            การตั้งค่าระบบ
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+            {[
+              { label: "ชื่อแสดงผล", value: "John K.", type: "text" },
+              { label: "อีเมล", value: "john@example.com", type: "email" }
+            ].map((f) => (
+              <div key={f.label}>
+                <label style={{ color: TEXT_SUB, fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  {f.label}
+                </label>
+                <input defaultValue={f.value} type={f.type} style={inputStyle} />
+              </div>
+            ))}
+          </div>
+        </div>
+ 
+        {/* System Preferences Section */}
+        <div style={cardStyle}>
+          <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px" }}>
+            <span style={{ fontSize: "20px" }}>⚙️</span> การตั้งค่าระบบ
           </h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-4 bg-white/5 rounded-xl">
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {/* Notification Toggle */}
+            <div style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "20px", background: BG_COLOR, borderRadius: "16px",
+              border: `1px solid ${BORDER_COLOR}`
+            }}>
               <div>
-                <p className="text-white font-medium">แจ้งเตือนเมื่อใช้จ่ายเกินงบ</p>
-                <p className="text-xs text-gray-400">ระบบจะส่งการแจ้งเตือนหากใช้จ่ายเกิน 80% ของงบ</p>
+                <p style={{ fontSize: "15px", fontWeight: 600 }}>แจ้งเตือนเมื่อใช้จ่ายเกินงบ</p>
+                <p style={{ color: TEXT_SUB, fontSize: "13px" }}>รับการแจ้งเตือนเมื่อใช้เกิน 80% ของงบที่ตั้งไว้</p>
               </div>
-              <input type="checkbox" className="w-5 h-5 accent-[var(--accent-green)]" defaultChecked />
+              <div style={{
+                width: "48px", height: "26px", background: THEME_COLOR,
+                borderRadius: "20px", position: "relative", cursor: "pointer",
+                boxShadow: "inset 0 1px 3px rgba(0,0,0,0.1)"
+              }}>
+                <div style={{
+                  position: "absolute", right: "4px", top: "4px",
+                  width: "18px", height: "18px", background: "#000", borderRadius: "50%",
+                }} />
+              </div>
             </div>
-            <div className="flex justify-between items-center p-4 bg-white/5 rounded-xl">
+
+            {/* Currency Select */}
+            <div style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "20px", background: BG_COLOR, borderRadius: "16px",
+              border: `1px solid ${BORDER_COLOR}`
+            }}>
               <div>
-                <p className="text-white font-medium">สกุลเงินหลัก</p>
-                <p className="text-xs text-gray-400">ตั้งค่าสกุลเงินที่จะแสดงผลในแอป</p>
+                <p style={{ fontSize: "15px", fontWeight: 600 }}>สกุลเงินหลัก</p>
+                <p style={{ color: TEXT_SUB, fontSize: "13px" }}>สกุลเงินที่ใช้แสดงผลทั่วทั้งแอปพลิเคชัน</p>
               </div>
-              <select className="bg-transparent border border-gray-600 rounded-lg p-1 text-sm text-white">
-                <option value="THB">บาท (THB)</option>
-                <option value="USD">ดอลลาร์ (USD)</option>
+              <select style={{
+                background: "#fff", border: `1px solid ${BORDER_COLOR}`,
+                borderRadius: "10px", padding: "10px 16px", color: TEXT_MAIN, 
+                fontSize: "14px", fontWeight: 600, outline: "none", cursor: "pointer"
+              }}>
+                <option>บาท (THB)</option>
+                <option>ดอลลาร์ (USD)</option>
               </select>
             </div>
           </div>
-        </section>
+        </div>
+ 
+        {/* Action Buttons */}
+        <div style={{ display: "flex", gap: "16px", marginTop: "8px" }}>
+          <button style={{
+            flex: 2, padding: "18px",
+            background: "#2563eb", border: "none",
+            borderRadius: "16px", color: "#fff", fontWeight: 700, fontSize: "15px", cursor: "pointer",
+            transition: "all 0.2s"
+          }}>
+            บันทึกการเปลี่ยนแปลง
+          </button>
+          <button style={{
+            flex: 1, padding: "18px",
+            background: "transparent", border: `1px solid ${BORDER_COLOR}`,
+            borderRadius: "16px", color: TEXT_SUB, fontSize: "15px", fontWeight: 600, cursor: "pointer"
+          }}>
+            รีเซ็ตเป็นค่าเริ่มต้น
+          </button>
+        </div>
 
-        <div className="flex gap-4">
-          <button className="btn-save" style={{ flex: 1 }}>บันทึกการตั้งค่าทั้งหมด</button>
-          <button className="btn-cancel" style={{ border: '1px solid #555' }}>รีเซ็ต</button>
+        {/* Danger Zone */}
+        <div style={{ marginTop: "16px", padding: "20px", textAlign: "center" }}>
+           <p style={{ color: "#ef4444", fontSize: "13px", fontWeight: 600, cursor: "pointer" }}>
+             ลบบัญชีและข้อมูลทั้งหมด
+           </p>
         </div>
       </div>
     </div>
