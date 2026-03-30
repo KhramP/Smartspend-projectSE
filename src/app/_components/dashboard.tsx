@@ -4,12 +4,12 @@ import { Transaction } from "@/generated/prisma/client";
 import { useState } from "react";
 
 
-const THEME_COLOR = "#2563be"; 
-const BG_COLOR = "#f4f4f5";    
-const CARD_BG = "#ffffff";    
-const BORDER_COLOR = "#e4e4e7"; 
-const TEXT_MAIN = "#09090b";  
-const TEXT_SUB = "#71717a";    
+export const THEME_COLOR = "#2563be"; 
+export const BG_COLOR = "#f4f4f5";    
+export const CARD_BG = "#ffffff";    
+export const BORDER_COLOR = "#e4e4e7"; 
+export const TEXT_MAIN = "#09090b";  
+export const TEXT_SUB = "#71717a";    
 
 export function DashBoard({
   transactions,
