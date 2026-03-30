@@ -1,19 +1,33 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { getBudgetOverview } from "../../actions/transaction";
-import "../../_components/GlobalLayout.css";
-import { BG_COLOR, TEXT_MAIN, TEXT_SUB } from "@/app/_components/dashboard";
+"use client";
 
-export default async function BudgetPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  const userId = session!.user!.id;
 
-  const budget = await getBudgetOverview({ userId });
+const THEME_COLOR = "#2563be"; 
+const BG_COLOR = "#f4f4f5";    
+const CARD_BG = "#ffffff";     
+const BORDER_COLOR = "#e4e4e7"; 
+const TEXT_MAIN = "#09090b";   
+const TEXT_SUB = "#71717a";   
 
-  const totalBudget = budget.totalIncome || budget.totalSpent || 1;
-  const totalUsed = budget.totalSpent;
-  const remaining = budget.remaining;
-  const overallPercent = totalBudget > 0 ? (totalUsed / totalBudget) * 100 : 0;
+const budgets = [
+  { name: "อาหาร", used: 5407, total: 6000, reset: "1 เม.ย.", icon: "🍜", color: "#84cc16" },
+  { name: "เดินทาง", used: 3131, total: 5000, reset: "1 เม.ย.", icon: "🚗", color: "#0ea5e9" },
+  { name: "บันเทิง", used: 2561, total: 5000, reset: "1 เม.ย.", icon: "🎮", color: "#8b5cf6" },
+  { name: "ช้อปปิ้ง", used: 1890, total: 1500, reset: "1 เม.ย.", icon: "🛍️", color: "#f43f5e" },
+];
+
+const totalBudget = 20000;
+const totalUsed = 14230;
+const remaining = totalBudget - totalUsed;
+const overallPercent = (totalUsed / totalBudget) * 100;
+
+export default function BudgetPage() {
+  const cardStyle = {
+    background: CARD_BG,
+    border: `1px solid ${BORDER_COLOR}`,
+    borderRadius: "24px",
+    padding: "32px",
+    boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.05)",
+  };
 
   return (
     <div style={{ padding: "40px", background: BG_COLOR, minHeight: "100vh", color: TEXT_MAIN, fontFamily: "inherit" }}>
@@ -35,51 +49,49 @@ export default async function BudgetPage() {
         </button>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "24px", marginBottom: "24px" }}>
-        {/* ส่วนซ้าย: ภาพรวมงบประมาณเดือนนี้ */}
-        <div className="glass-card p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-medium text-white">ภาพรวมงบประมาณเดือนนี้</h3>
-            <button className="btn-premium" style={{ borderRadius: "20px", padding: "5px 15px" }}>
-              ตั้งงบใหม่
-            </button>
-          </div>
-
-          <div className="stat-grid" style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: "15px" }}>
-            <div className="stat-card bg-black/20 rounded-xl p-4 text-center">
-              <p className="text-xs text-gray-400 mb-1">งบรวม</p>
-              <h4 className="text-xl font-bold">฿{totalBudget.toLocaleString()}</h4>
+      {/* Overview card */}
+      <div style={cardStyle}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0", marginBottom: "32px" }}>
+          {[
+            { label: "งบรวมเดือนนี้", value: `฿${totalBudget.toLocaleString()}`, color: TEXT_MAIN },
+            { label: "ใช้ไปแล้ว", value: `฿${totalUsed.toLocaleString()}`, color: "#e11d48" },
+            { label: "คงเหลือ", value: `฿${remaining.toLocaleString()}`, color: "#10b981" },
+          ].map((item, i) => (
+            <div key={item.label} style={{
+              padding: "0 40px",
+              borderLeft: i > 0 ? `1px solid ${BORDER_COLOR}` : "none",
+            }}>
+              <p style={{ color: TEXT_SUB, fontSize: "12px", fontWeight: 700, marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>
+                {item.label}
+              </p>
+              <p style={{ color: item.color, fontSize: "32px", fontWeight: 800 }}>{item.value}</p>
             </div>
-            <div className="stat-card bg-black/20 rounded-xl p-4 text-center">
-              <p className="text-xs text-gray-400 mb-1">ใช้ไปแล้ว</p>
-              <h4 className="text-xl font-bold text-red-400">฿{totalUsed.toLocaleString()}</h4>
-            </div>
-            <div className="stat-card bg-black/20 rounded-xl p-4 text-center">
-              <p className="text-xs text-gray-400 mb-1">คงเหลือ</p>
-              <h4 className="text-xl font-bold text-green-400">฿{remaining.toLocaleString()}</h4>
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <div className="flex justify-between text-xs text-gray-400 mb-2">
-              <span>ภาพรวม {overallPercent.toFixed(1)}% ของงบทันหมด</span>
-            </div>
-            <div className="gold-progress-bar" style={{ height: "12px" }}>
-              <div className="gold-progress-fill" style={{ width: `${overallPercent}%` }}></div>
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* ส่วนขวา: สัดส่วนงบที่ใช้ (Donut Chart จำลอง) */}
-        <div className="glass-card p-6 flex flex-col items-center justify-center">
-          <h3 className="text-sm font-medium text-gray-400 mb-4 self-start">สัดส่วนงบที่ใช้</h3>
-          <div className="relative w-40 h-40 rounded-full border-[10px] border-gray-700 flex items-center justify-center">
-            <div className="text-center">
-              <span className="text-3xl font-bold text-white">{Math.round(overallPercent)}%</span>
-              <p className="text-[10px] text-gray-400">ใช้ไปแล้ว</p>
-            </div>
-            {/* วงแหวนสีทองจำลองสัดส่วน */}
-            <div className="absolute inset-[-10px] rounded-full border-[10px] border-transparent border-t-[var(--accent-gold)] border-r-[var(--accent-gold)] transform rotate-45"></div>
+        {/* Main progress */}
+        <div style={{ background: BG_COLOR, padding: "24px", borderRadius: "20px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px", alignItems: "center" }}>
+            <span style={{ color: TEXT_MAIN, fontSize: "14px", fontWeight: 700 }}>ภาพรวมการใช้งบเดือนนี้</span>
+            <span style={{ 
+              background: overallPercent > 80 ? "#fff1f2" : "#f7fee7",
+              color: overallPercent > 80 ? "#e11d48" : "#4d7c0f",
+              padding: "4px 12px",
+              borderRadius: "10px",
+              fontSize: "13px", 
+              fontWeight: 800 
+            }}>
+              {overallPercent.toFixed(1)}%
+            </span>
+          </div>
+          <div style={{ height: "14px", background: BORDER_COLOR, borderRadius: "10px", overflow: "hidden" }}>
+            <div style={{
+              width: `${overallPercent}%`,
+              height: "100%",
+              background: overallPercent > 80 ? "#e11d48" : "#000",
+              borderRadius: "10px",
+              transition: "width 1s cubic-bezier(0.4, 0, 0.2, 1)",
+            }} />
           </div>
         </div>
       </div>
@@ -89,43 +101,72 @@ export default async function BudgetPage() {
 
       {/* Category budget cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px" }}>
-        {budget.categories.length === 0 ? (
-          <div className="glass-card p-5 col-span-4 text-center text-gray-500 py-12">
-            ยังไม่มีข้อมูลค่าใช้จ่ายเดือนนี้
-          </div>
-        ) : (
-          budget.categories.map((cat) => {
-            const percent = totalUsed > 0 ? (cat.spent / totalUsed) * 100 : 0;
+        {budgets.map((b) => {
+          const pct = (b.used / b.total) * 100;
+          const isOver = pct > 100;
+          const barColor = isOver ? "#e11d48" : b.color;
 
-            return (
-              <div key={cat.name} className="glass-card p-5 relative overflow-hidden">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 className="text-white font-medium flex items-center gap-2">
-                      <span>{cat.icon}</span> {cat.name}
-                    </h4>
-                    <p className="text-[10px] text-gray-400">{cat.count} รายการเดือนนี้</p>
-                  </div>
-                  <div className="text-sm font-bold text-[var(--accent-green)]">{percent.toFixed(0)}%</div>
+          return (
+            <div key={b.name} style={{
+              ...cardStyle,
+              padding: "24px",
+              borderColor: isOver ? "#fecaca" : BORDER_COLOR,
+              background: isOver ? "#fffbfa" : CARD_BG,
+            }}>
+              {/* Icon + name */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px" }}>
+                <div style={{
+                  width: "48px", height: "48px",
+                  background: isOver ? "#fee2e2" : `${b.color}15`,
+                  borderRadius: "14px",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "24px",
+                }}>
+                  {b.icon}
                 </div>
-
-                <div className="space-y-1 mb-4">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-400">ใช้ไป</span>
-                    <span className="text-white font-semibold">฿{cat.spent.toLocaleString()}</span>
-                  </div>
-                </div>
-
-                <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-[var(--accent-gold)]"
-                    style={{ width: `${Math.min(percent, 100)}%` }}
-                  ></div>
+                <div style={{ textAlign: "right" }}>
+                  <p style={{ color: TEXT_MAIN, fontWeight: 800, fontSize: "16px" }}>{b.name}</p>
+                  <p style={{ color: TEXT_SUB, fontSize: "11px", fontWeight: 500 }}>รีเซ็ต {b.reset}</p>
                 </div>
               </div>
-            );
-          })
-        )}
+
+              {/* Amount */}
+              <div style={{ marginBottom: "20px" }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginBottom: "8px" }}>
+                  <span style={{ color: TEXT_MAIN, fontSize: "24px", fontWeight: 800 }}>฿{b.used.toLocaleString()}</span>
+                  <span style={{ color: TEXT_SUB, fontSize: "13px", fontWeight: 500 }}>/ ฿{b.total.toLocaleString()}</span>
+                </div>
+                
+                {/* Progress */}
+                <div style={{ height: "8px", background: "#f1f1f5", borderRadius: "10px", overflow: "hidden" }}>
+                  <div style={{
+                    width: `${Math.min(pct, 100)}%`,
+                    height: "100%",
+                    background: barColor,
+                    borderRadius: "10px",
+                    transition: "width 0.8s ease",
+                  }} />
+                </div>
+              </div>
+
+              {/* Status Badge */}
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+                background: isOver ? "#e11d48" : "#f4f4f5",
+                color: isOver ? "#fff" : TEXT_SUB,
+                padding: "8px",
+                borderRadius: "12px",
+                fontSize: "12px",
+                fontWeight: 700,
+              }}>
+                {isOver ? "⚠ เกินงบประมาณ" : `เหลืออีก ฿${(b.total - b.used).toLocaleString()}`}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
