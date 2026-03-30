@@ -20,7 +20,7 @@ const SIDEBAR_LINKS = [
 const PREMIUM_SIDEBAR_LINKS = [
   { href: "/analyse", icon: BarChart, label: "วิเคราะห์เชิงลึก" },
   { href: "/budget", icon: Book, label: "งบประมาณ" },
-  { href: "/tax", icon: BookCopy, label: "คำนวณภาษี" },
+  { href: "/tax", icon: BookCopy, label: "คำนวนภาษี" },
   { href: "/history", icon: BookCopy, label: "ย้อนหลัง 2 ปี" },
 ] as const;
 
@@ -37,7 +37,8 @@ function SidebarLink({
   collapsed?: boolean;
   onClick?: () => void;
 }) {
-  const isActive = usePathname() === href;
+  const pathname = usePathname();
+  const isActive = pathname === href;
 
   return (
     <Button
@@ -45,7 +46,7 @@ function SidebarLink({
       className={cn(
         "w-full gap-3",
         collapsed ? "justify-center px-2" : "justify-start",
-        isActive && "bg-primary/10 text-primary",
+        isActive && "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
       )}
       asChild
       onClick={onClick}
@@ -62,7 +63,7 @@ function SidebarContent({ collapsed, onNavigate }: { collapsed?: boolean; onNavi
   const { user, isLoading } = useUser();
 
   return (
-    <>
+    <div className="flex flex-col h-full bg-zinc-100 text-sidebar-foreground">
       {/* Logo */}
       <div className={cn("p-6", collapsed ? "text-center px-3" : "text-center")}>
         <Link href="/" className="font-bold text-xl" onClick={onNavigate}>
@@ -70,7 +71,7 @@ function SidebarContent({ collapsed, onNavigate }: { collapsed?: boolean; onNavi
         </Link>
       </div>
 
-      <Separator />
+      <Separator className="bg-sidebar-border" />
 
       {/* Nav links */}
       <nav className="flex-1 space-y-1 p-3">
@@ -91,13 +92,13 @@ function SidebarContent({ collapsed, onNavigate }: { collapsed?: boolean; onNavi
 
       {/* Account section */}
       {user && (
-        <div className="p-3">
+        <div className="p-3 border-t border-sidebar-border">
           {!collapsed && <p className="text-xs font-semibold text-muted-foreground px-3 mb-2">บัญชี</p>}
           <SidebarLink href="/theme" icon={User} label="ธีม" collapsed={collapsed} onClick={onNavigate} />
           <SidebarLink href="/settings" icon={Wallet} label="ตั้งค่า" collapsed={collapsed} onClick={onNavigate} />
           <Button
             variant="ghost"
-            className={cn("w-full gap-3", collapsed ? "justify-center px-2" : "justify-start")}
+            className={cn("w-full gap-3 text-destructive hover:bg-destructive/10", collapsed ? "justify-center px-2" : "justify-start")}
             onClick={() => authClient.signOut()}
           >
             <LogOut className="size-5 shrink-0" />
@@ -106,19 +107,19 @@ function SidebarContent({ collapsed, onNavigate }: { collapsed?: boolean; onNavi
         </div>
       )}
 
-      {/* User profile footer */}
-      <div className="border-t p-3">
+      {/*User profile*/}
+      <div className="border-t border-sidebar-border p-3">
         {isLoading ? null : !user ? (
-          <div className={cn(collapsed ? "text-center" : "text-center")}>
+          <div className="text-center">
             <Link href="/login" onClick={onNavigate}>
-              <Button variant="outline" size="sm" className={collapsed ? "w-full px-2" : ""}>
+              <Button variant="outline" size="sm" className={collapsed ? "w-full px-2" : "w-full"}>
                 {collapsed ? <User className="size-4" /> : "Sign In"}
               </Button>
             </Link>
           </div>
         ) : (
           <div className={cn("flex items-center gap-3", collapsed ? "justify-center" : "px-2")}>
-            <Avatar className="size-9 shrink-0">
+            <Avatar className="size-9 shrink-0 border border-sidebar-border">
               <AvatarImage src="/images/default-avatar.png" alt="Avatar" />
             </Avatar>
             {!collapsed && (
@@ -130,17 +131,15 @@ function SidebarContent({ collapsed, onNavigate }: { collapsed?: boolean; onNavi
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
 export function SSideBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const pathname = usePathname();
   const [prevPathname, setPrevPathname] = useState(pathname);
 
-  // Close mobile drawer on route change during the render phase
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
     setMobileOpen(false);
@@ -150,9 +149,8 @@ export function SSideBar() {
     <>
       {/* Mobile hamburger button */}
       <button
-        className="fixed top-4 left-4 z-50 flex items-center justify-center rounded-lg border border-border bg-background p-2 shadow-md md:hidden"
+        className="fixed top-4 left-4 z-40 flex items-center justify-center rounded-lg border border-sidebar-border bg-sidebar p-2 shadow-sm md:hidden"
         onClick={() => setMobileOpen(true)}
-        aria-label="Open menu"
       >
         <Menu className="size-5" />
       </button>
@@ -160,7 +158,7 @@ export function SSideBar() {
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -168,22 +166,21 @@ export function SSideBar() {
       {/* Mobile drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r bg-background transition-transform duration-300 md:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-sidebar-border bg-sidebar transition-transform duration-300 md:hidden",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <button
-          className="absolute right-3 top-3 rounded-md p-1 text-muted-foreground hover:text-foreground"
+          className="absolute right-4 top-5 text-muted-foreground hover:text-foreground"
           onClick={() => setMobileOpen(false)}
-          aria-label="Close menu"
         >
           <X className="size-5" />
         </button>
         <SidebarContent onNavigate={() => setMobileOpen(false)} />
       </aside>
 
-      {/* Desktop sidebar */}
-      <aside className="hidden md:flex h-screen sticky top-0 w-64 flex-col border-r bg-muted/40">
+
+      <aside className="hidden md:flex h-screen sticky top-0 w-64 flex-col border-r border-sidebar-border bg-sidebar">
         <SidebarContent />
       </aside>
     </>

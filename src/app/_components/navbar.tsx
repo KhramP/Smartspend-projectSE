@@ -8,9 +8,9 @@ export function Navbar() {
 
   return (
     <div className="relative">
-      <div className="top-0 z-30 h-[50px] md:h-[77px] w-full border-b border-border flex items-center justify-end px-4 pl-14 md:pl-4">
+      <div className="top-0 z-30 h-[50px] md:h-[77px] w-full bg-zinc-100 border-b border-border flex items-center justify-end px-4 pl-14 md:pl-4">
         <button
-          className="flex items-center gap-2 rounded-xl border-none bg-[#9bd104] px-3 py-2.5 sm:px-5 sm:py-3.5 text-sm sm:text-base font-semibold text-white cursor-pointer"
+          className="flex items-center gap-2 rounded-xl border-none bg-blue-700 px-3 py-2.5 sm:px-5 sm:py-3.5 text-sm sm:text-base font-semibold text-white cursor-pointer"
           onClick={() => setIsModalOpen(true)}
         >
           <svg

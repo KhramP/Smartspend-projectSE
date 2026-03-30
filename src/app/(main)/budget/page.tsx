@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { getBudgetOverview } from "../../actions/transaction";
 import "../../_components/GlobalLayout.css";
+import { BG_COLOR, TEXT_MAIN, TEXT_SUB } from "@/app/_components/dashboard";
 
 export default async function BudgetPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -15,8 +16,24 @@ export default async function BudgetPage() {
   const overallPercent = totalBudget > 0 ? (totalUsed / totalBudget) * 100 : 0;
 
   return (
-    <div className="p-10">
-      <h2 className="text-2xl font-semibold text-white mb-6">งบประมาณ</h2>
+    <div style={{ padding: "40px", background: BG_COLOR, minHeight: "100vh", color: TEXT_MAIN, fontFamily: "inherit" }}>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+        <div>
+          <h1 style={{ fontSize: "32px", fontWeight: 800, letterSpacing: "-1px" }}>งบประมาณ</h1>
+          <p style={{ color: TEXT_SUB, fontSize: "14px" }}>จัดการและติดตามการใช้จ่ายตามเป้าหมาย</p>
+        </div>
+        <button style={{
+          background: "#2563eb", color: "#fff",
+          padding: "12px 24px",
+          border: "none",
+          borderRadius: "14px",
+          fontWeight: 700, fontSize: "14px", cursor: "pointer",
+          transition: "transform 0.2s",
+        }}>
+          + ตั้งงบใหม่
+        </button>
+      </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "24px", marginBottom: "24px" }}>
         {/* ส่วนซ้าย: ภาพรวมงบประมาณเดือนนี้ */}
@@ -67,7 +84,10 @@ export default async function BudgetPage() {
         </div>
       </div>
 
-      {/* แถวล่าง: การ์ดงบประมาณแยกตามหมวดหมู่ */}
+      {/* Category Grid Header */}
+      <h2 style={{ fontSize: "18px", fontWeight: 700, marginTop: "40px", marginBottom: "20px" }}>งบประมาณแยกตามหมวดหมู่</h2>
+
+      {/* Category budget cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px" }}>
         {budget.categories.length === 0 ? (
           <div className="glass-card p-5 col-span-4 text-center text-gray-500 py-12">

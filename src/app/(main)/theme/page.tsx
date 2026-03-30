@@ -1,141 +1,153 @@
 "use client";
 
 import { useState } from "react";
-import "../../_components/GlobalLayout.css";
+
+const THEME_COLOR = "#2563be"; 
+const BG_COLOR = "#f4f4f5";   
+const CARD_BG = "#ffffff";     
+const BORDER_COLOR = "#e4e4e7"; 
+const TEXT_MAIN = "#09090b";   
+const TEXT_SUB = "#71717a";    
 
 export default function ThemePage() {
-  // จำลอง State สำหรับค่าการตั้งค่าต่างๆ
-  const [selectedColor, setSelectedColor] = useState("#9bd104ff"); // สีเขียวเลมอนเดิม
-  const [cardStyle, setCardStyle] = useState("Glassmorphism");
+  const [selectedColor, setSelectedColor] = useState("#bef264"); 
+  const [cardStyleName, setCardStyleName] = useState("Minimalist");
   const [fontSize, setFontSize] = useState(16);
-
-  // รายการสีหลัก (Accent Colors) ให้เลือก ตามสไตล์ในรูป
+ 
   const accentColors = [
-    { name: "Lemon Green", value: "#9bd104ff" },
+    { name: "Lemon Green", value: "#bef264" },
     { name: "Ocean Blue", value: "#38bdf8" },
     { name: "Royal Purple", value: "#a855f7" },
     { name: "Fiery Red", value: "#ef4444" },
     { name: "Sunset Orange", value: "#f97316" },
     { name: "Sakura Pink", value: "#ec4899" },
   ];
+  const cardStyles = ["Minimalist", "Glassmorphism", "Material Design", "Bold Outline"];
 
-  // รายการสไตล์ของการ์ด
-  const cardStyles = ["Glassmorphism", "Flat Dark", "Material Design", "Minimalist"];
-
+  const containerCardStyle = {
+    background: CARD_BG,
+    border: `1px solid ${BORDER_COLOR}`,
+    borderRadius: "24px",
+    padding: "32px",
+    boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.05)",
+  };
+ 
   return (
-    <div className="p-6 md:p-10 flex justify-center">
-      {/* Container หลัก จัดกลางและจำลองหน้าจอมือถือ/แท็บเล็ตเพื่อให้ดู friendly ขึ้น */}
-      <div className="glass-card w-full max-w-3xl p-6 md:p-8 shadow-2xl rounded-3xl border border-white/10">
+    <div style={{ padding: "40px", background: BG_COLOR, minHeight: "100vh", color: TEXT_MAIN, fontFamily: "inherit" }}>
+      
+      <div style={{ marginBottom: "32px" }}>
+        <h1 style={{ fontSize: "32px", fontWeight: 800, letterSpacing: "-1px" }}>ปรับแต่งธีม</h1>
+        <p style={{ color: TEXT_SUB, fontSize: "14px" }}>เลือกสไตล์และสีสันที่สะท้อนความเป็นตัวคุณ</p>
+      </div>
+ 
+      <div style={{ maxWidth: "720px", display: "flex", flexDirection: "column", gap: "24px" }}>
         
-        <p className="text-gray-400 mb-10 text-center text-lg">ปรับแต่งบรรยากาศและสไตล์การใช้งานในแบบที่คุณชอบ</p>
-        
-        <div className="space-y-12">
-          
-          {/* ส่วนที่ 1: เลือกสีหลัก (Accent Color) - ทำเป็นวงกลมตามรูป */}
-          <section>
-            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
-              <div className="w-2 h-6 rounded-full" style={{ background: selectedColor }}></div>
-              สีหลักของแอป (Accent Color)
-            </h3>
-            <div className="flex flex-wrap gap-5 justify-center">
-              {accentColors.map((color) => (
-                <div 
-                  key={color.name}
-                  onClick={() => setSelectedColor(color.value)}
-                  className={`w-14 h-14 rounded-full cursor-pointer transition-all duration-300 flex items-center justify-center border-4 ${
-                    selectedColor === color.value 
-                    ? "border-white scale-110 shadow-lg" 
-                    : "border-transparent hover:border-white/30 hover:scale-105"
-                  }`}
-                  style={{ background: color.value }}
-                  title={color.name}
-                >
-                  {selectedColor === color.value && (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                      <path d="M20 6L9 17L4 12"></path>
-                    </svg>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* ส่วนที่ 2: สไตล์ของการ์ดและส่วนประกอบ (Card Style) - ทำเป็น List เลือก */}
-          <section>
-            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
-              <div className="w-2 h-6 rounded-full" style={{ background: selectedColor }}></div>
-              สไตล์ของการ์ด (Card Style)
-            </h3>
-            <div className="space-y-3">
-              {cardStyles.map((style) => (
-                <div 
-                  key={style}
-                  onClick={() => setCardStyle(style)}
-                  className={`flex justify-between items-center p-5 rounded-2xl cursor-pointer transition-colors border ${
-                    cardStyle === style 
-                    ? "bg-white/10 border-white/20" 
-                    : "bg-black/20 border-transparent hover:bg-white/5 hover:border-white/10"
-                  }`}
-                >
-                  <span className={`font-medium ${cardStyle === style ? "text-white" : "text-gray-300"}`}>
-                    {style}
-                  </span>
-                  {/* Custom Radio Button */}
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                    cardStyle === style ? "border-white" : "border-gray-600"
-                  }`}>
-                    {cardStyle === style && (
-                      <div className="w-3.5 h-3.5 rounded-full" style={{ background: selectedColor }}></div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* ส่วนที่ 3: ขนาดตัวอักษร (Font Size) - ทำเป็น Slider ตามรูป */}
-          <section>
-            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
-              <div className="w-2 h-6 rounded-full" style={{ background: selectedColor }}></div>
-              ขนาดตัวอักษร (Font Size)
-            </h3>
-            <div className="glass-card p-6 rounded-2xl bg-black/20 border border-white/10">
-              <div className="flex items-center gap-6">
-                <span className="text-sm text-gray-400">A</span>
-                <input 
-                  type="range" 
-                  min="12" 
-                  max="24" 
-                  value={fontSize} 
-                  onChange={(e) => setFontSize(parseInt(e.target.value))}
-                  className="w-full h-2 rounded-full accent-white cursor-pointer"
-                  style={{ '--accent-color': selectedColor } as React.CSSProperties} // ส่งค่าสีไปใช้ใน CSS
-                />
-                <span className="text-2xl text-white">A</span>
+        <div style={containerCardStyle}>
+          <h3 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "24px", display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ color: selectedColor }}>●</span> สีหลักของแอป
+          </h3>
+          <div style={{ display: "flex", gap: "18px", flexWrap: "wrap" }}>
+            {accentColors.map((c) => (
+              <div 
+                key={c.value} 
+                onClick={() => setSelectedColor(c.value)} 
+                style={{
+                  width: "56px", height: "56px", borderRadius: "16px",
+                  background: c.value, cursor: "pointer",
+                  border: selectedColor === c.value ? `4px solid #fff` : "none",
+                  boxShadow: selectedColor === c.value ? `0 0 0 2px ${c.value}, 0 4px 12px ${c.value}40` : "none",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                  transform: selectedColor === c.value ? "scale(1.1)" : "scale(1)",
+                }}
+              >
+                {selectedColor === c.value && <span style={{ color: "#000", fontWeight: 900, fontSize: "20px" }}>✓</span>}
               </div>
-              <p className="text-center mt-4 text-gray-300" style={{ fontSize: `${fontSize}px` }}>
-                ตัวอย่างขนาดตัวอักษร: {fontSize}px
-              </p>
-            </div>
-          </section>
-
+            ))}
+          </div>
         </div>
-
-        {/* ปุ่ม Action ด้านล่าง - ปรับให้โค้งมนและเด่นชัดตามรูป */}
-        <div className="mt-16 pt-8 border-t border-white/10 flex justify-center">
-          <button 
-            className="btn-save shadow-lg transform hover:scale-105 transition-all duration-300" 
-            style={{ 
-              width: '280px', 
-              padding: '18px', 
-              fontSize: '18px', 
-              borderRadius: '40px',
-              background: selectedColor, // ใช้สีหลักที่เลือกเป็นพื้นหลังปุ่ม
-              color: '#000', // สีตัวอักษรบนปุ่มเป็นสีดำเพื่อให้ตัดกัน
-              fontWeight: 'bold'
-            }}
-          >
-            บันทึกการตั้งค่าธีม
+ 
+        {/*Card style*/}
+        <div style={containerCardStyle}>
+          <h3 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "20px" }}>
+            <span style={{ color: selectedColor }}>●</span> สไตล์การ์ด
+          </h3>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            {cardStyles.map((s) => (
+              <div 
+                key={s} 
+                onClick={() => setCardStyleName(s)} 
+                style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "16px 20px",
+                  background: cardStyleName === s ? `${selectedColor}10` : BG_COLOR,
+                  border: `1px solid ${cardStyleName === s ? selectedColor : BORDER_COLOR}`,
+                  borderRadius: "14px", cursor: "pointer", transition: "all 0.2s",
+                }}
+              >
+                <span style={{ color: cardStyleName === s ? TEXT_MAIN : TEXT_SUB, fontSize: "14px", fontWeight: 700 }}>{s}</span>
+                <div style={{
+                  width: "20px", height: "20px", borderRadius: "50%",
+                  border: `2px solid ${cardStyleName === s ? selectedColor : BORDER_COLOR}`,
+                  background: cardStyleName === s ? selectedColor : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  {cardStyleName === s && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#000" }} />}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+ 
+        {/*Font*/}
+        <div style={containerCardStyle}>
+          <h3 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "24px" }}>
+            <span style={{ color: selectedColor }}>●</span> ขนาดตัวอักษร
+          </h3>
+          <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "24px", padding: "0 10px" }}>
+            <span style={{ color: TEXT_SUB, fontSize: "12px", fontWeight: 800 }}>A</span>
+            <input 
+              type="range" min={12} max={24} value={fontSize}
+              onChange={(e) => setFontSize(+e.target.value)}
+              style={{ 
+                flex: 1, 
+                accentColor: "#2563eb",
+                height: "6px",
+                cursor: "pointer"
+              }} 
+            />
+            <span style={{ color: TEXT_MAIN, fontSize: "24px", fontWeight: 800 }}>A</span>
+          </div>
+          <div style={{ 
+            background: BG_COLOR, 
+            padding: "24px", 
+            borderRadius: "16px", 
+            textAlign: "center",
+            border: `1px dashed ${BORDER_COLOR}`
+          }}>
+            <p style={{ color: TEXT_MAIN, fontSize: `${fontSize}px`, fontWeight: 500 }}>
+              นี่คือตัวอย่างขนาดตัวอักษรของคุณ ({fontSize}px)
+            </p>
+          </div>
+        </div>
+ 
+        {/*Save Button*/}
+        <div style={{ display: "flex", gap: "16px", marginTop: "8px" }}>
+          <button style={{
+            flex: 2, padding: "20px",
+            background: "#2563eb", color: "#fff", border: "none",
+            borderRadius: "18px", fontWeight: 800, fontSize: "16px", cursor: "pointer",
+            transition: "all 0.2s",
+            boxShadow: `0 10px 15px -3px rgba(0,0,0,0.1)`
+          }}>
+            บันทึกการปรับแต่งธีม
+          </button>
+          <button style={{
+            flex: 1, padding: "20px",
+            background: "transparent", border: `1px solid ${BORDER_COLOR}`,
+            borderRadius: "18px", color: TEXT_SUB, fontWeight: 700, fontSize: "16px", cursor: "pointer"
+          }}>
+            คืนค่าเริ่มต้น
           </button>
         </div>
       </div>
