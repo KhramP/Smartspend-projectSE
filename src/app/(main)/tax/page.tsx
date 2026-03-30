@@ -1,118 +1,14 @@
-"use client";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { getTotalIncome } from "../../actions/transaction";
+import TaxPageClient from "./client";
 
-import { useState } from "react";
-import "../../_components/GlobalLayout.css";
+export default async function TaxPage() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session!.user!.id;
 
-export default function TaxPage() {
-  // จำลอง State สำหรับฟอร์ม
-  const [taxResult, setTaxResult] = useState({ amount: "100.00", rate: "15.00" });
+  const currentYear = new Date().getFullYear();
+  const totalIncome = await getTotalIncome({ userId, year: currentYear });
 
-  // ข้อมูลตารางอัตราภาษีจาก Wireframe
-  const taxBrackets = [
-    { income: "1 - 150,000", range: "150,000", rate: "ได้รับการยกเว้น" },
-    { income: "150,001 - 300,000", range: "150,000", rate: "5" },
-    { income: "300,001 - 500,000", range: "200,000", rate: "10" },
-    { income: "500,001 - 750,000", range: "250,000", rate: "15" },
-    { income: "750,001 - 1,000,000", range: "250,000", rate: "20" },
-    { income: "1,000,001 - 2,000,000", range: "1,000,000", rate: "25" },
-    { income: "2,000,001 - 5,000,000", range: "3,000,000", rate: "30" },
-    { income: "5,000,001 บาทขึ้นไป", range: "-", rate: "35" },
-  ];
-
-  return (
-    <div className="p-10">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px" }}>
-        
-        {/* ฝั่งซ้าย: ฟอร์มกรอกค่าลดหย่อน */}
-        <div className="glass-card p-8">
-          <div className="page-title mb-8" style={{ fontSize: "28px" }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: "12px" }}>
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="3" y1="9" x2="21" y2="9"></line>
-              <line x1="9" y1="21" x2="9" y2="9"></line>
-            </svg>
-            <span>ค่าลดหย่อนส่วนตัว</span>
-          </div>
-
-          <div className="space-y-6">
-            <div className="form-group">
-              <label>ค่าลดหย่อนส่วนตัว</label>
-              <input type="number" className="form-input" placeholder="ระบุจำนวนเงิน" />
-            </div>
-            <div className="form-group">
-              <label>เบี้ยประกันชีวิต</label>
-              <input type="number" className="form-input" placeholder="ระบุจำนวนเงิน" />
-            </div>
-            <div className="form-group">
-              <label>กองทุน SSF/RMF (บาท)</label>
-              <input type="number" className="form-input" placeholder="ระบุจำนวนเงิน" />
-            </div>
-            <div className="form-group">
-              <label>ดอกเบี้ยบ้าน (บาท)</label>
-              <input type="number" className="form-input" placeholder="ระบุจำนวนเงิน" />
-            </div>
-            <div className="form-group">
-              <label>เงินบริจาค (บาท)</label>
-              <input type="number" className="form-input" placeholder="ระบุจำนวนเงิน" />
-            </div>
-          </div>
-
-          <div className="mt-10 pt-4 border-t border-white/10 text-center">
-            <p className="text-xs text-gray-500">กรอกข้อมูลให้ถูกต้อง เพื่อความแม่นยำของระบบ</p>
-          </div>
-        </div>
-
-        {/* ฝั่งขวา: ผลลัพธ์และตารางภาษี */}
-        <div className="flex flex-col gap-6">
-          <div className="glass-card p-8 flex-1">
-            <div className="text-center mb-8">
-              <p className="text-gray-400 text-lg mb-2">ภาษีที่ต้องชำระ (ประมาณการ)</p>
-              <h3 className="text-5xl font-bold text-white mb-2">฿{taxResult.amount}</h3>
-              <p className="text-gray-400">อัตราภาษีที่แท้จริง {taxResult.rate}% ของรายได้</p>
-            </div>
-
-            <div className="border-t border-white/10 my-8"></div>
-
-            {/* ตารางอัตราภาษี */}
-            <div className="overflow-hidden rounded-xl border border-white/10 bg-black/20">
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
-                <thead>
-                  <tr style={{ background: "rgba(155, 209, 4, 0.2)" }}>
-                    <th className="p-3 text-left text-[var(--accent-green)]">เงินได้สุทธิ (บาท)</th>
-                    <th className="p-3 text-left text-[var(--accent-green)]">ช่วงเงินได้สุทธิ</th>
-                    <th className="p-3 text-right text-[var(--accent-green)]">อัตราภาษี (ร้อยละ)</th>
-                  </tr>
-                </thead>
-                <tbody className="text-gray-300">
-                  {taxBrackets.map((item, idx) => (
-                    <tr key={idx} className="border-t border-white/5 hover:bg-white/5 transition-colors">
-                      <td className="p-3">{item.income}</td>
-                      <td className="p-3">{item.range}</td>
-                      <td className="p-3 text-right">{item.rate}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="mt-6 flex gap-2 text-yellow-500/80">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 mt-0.5">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                <line x1="12" y1="9" x2="12" y2="13"></line>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              </svg>
-              <p className="text-[11px]">การคำนวณนี้เป็นการประมาณการเบื้องต้นเท่านั้น กรุณาปรึกษาผู้เชี่ยวชาญด้านภาษีเพื่อความถูกต้อง</p>
-            </div>
-          </div>
-
-          {/* ปุ่ม Action ด้านล่าง */}
-          <div className="flex gap-4">
-            <button className="btn-save" style={{ flex: 1, padding: "20px", fontSize: "20px" }}>คำนวณภาษี</button>
-            <button className="btn-cancel" style={{ flex: 1, padding: "20px", fontSize: "20px", background: "rgba(255,255,255,0.05)" }}>ยกเลิก</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  );
+  return <TaxPageClient totalIncome={totalIncome} />;
 }
