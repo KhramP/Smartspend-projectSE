@@ -1,7 +1,12 @@
 "use server";
 
-import prisma from "@/lib/prisma";
-import { randomUUID } from "crypto";
+// Facade Pattern: Server Actions delegate to Service layer
+// Each action is a thin wrapper providing the "use server" boundary
+
+import { TransactionService } from "@/services/transaction.service";
+import { UserService } from "@/services/user.service";
+
+// ─── Transaction Actions ──────────────────────────────────────
 
 interface CreateTransactionInput {
   amount: number;
@@ -14,102 +19,65 @@ interface CreateTransactionInput {
 }
 
 export async function createTransaction(input: CreateTransactionInput) {
-  const { amount, name, type, category, date, note, userId } = input;
-
-  if (!amount || !name || !type || !category || !date) {
-    return { error: "กรุณากรอกข้อมูลให้ครบถ้วน" };
-  }
-
-  if (amount <= 0) {
-    return { error: "จำนวนเงินต้องมากกว่า 0" };
-  }
-
-  const transaction = await prisma.transaction.create({
-    data: {
-      id: randomUUID(),
-      amount,
-      name,
-      type,
-      category,
-      userId,
-      date: new Date(date),
-      note: note || null,
-    },
-  });
-
-  return { success: true, transaction };
+  return TransactionService.createTransaction(input);
 }
 
 export async function getRecentTransactions({ userId }: { userId: string }) {
-  const transactions = await prisma.transaction.findMany({
-    where: { userId: userId },
-    orderBy: { date: "desc" },
-    take: 10,
-  });
-  return transactions;
+  return TransactionService.getRecentTransactions(userId);
 }
 
 export async function getDashboardData({ userId }: { userId: string }) {
-  const thisMonthIncome = await prisma.transaction.aggregate({
-    where: {
-      userId,
-      type: "income",
-      date: {
-        gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-        lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1),
-      },
-    },
-    _sum: { amount: true },
-  });
-
-  const thisMonthExpense = await prisma.transaction.aggregate({
-    where: {
-      userId,
-      type: "expense",
-      date: {
-        gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-        lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1),
-      },
-    },
-    _sum: { amount: true },
-  });
-
-  const balance = (thisMonthIncome._sum.amount || 0) - (thisMonthExpense._sum.amount || 0);
-
-  const todayExpense = await prisma.transaction.aggregate({
-    where: {
-      userId,
-      type: "expense",
-      date: {
-        gte: new Date(new Date().setHours(0, 0, 0, 0)),
-        lt: new Date(new Date().setHours(24, 0, 0, 0)),
-      },
-    },
-    _sum: { amount: true },
-  });
-
-  const eachCategorySpendingThisMonth = await prisma.transaction.groupBy({
-    by: ["category"],
-    where: {
-      userId,
-      type: "expense",
-      date: {
-        gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-        lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1),
-      },
-    },
-    _sum: { amount: true },
-  });
-
-  return {
-    thisMonthIncome: thisMonthIncome._sum.amount || 0,
-    thisMonthExpense: thisMonthExpense._sum.amount || 0,
-    balance,
-    todayExpense: todayExpense._sum.amount || 0,
-    eachCategorySpendingThisMonth: eachCategorySpendingThisMonth.map((cat) => ({
-      category: cat.category!,
-      amount: cat._sum.amount || 0,
-    })),
-  };
+  return TransactionService.getDashboardData(userId);
 }
 
+export async function getTransactionPageData({ userId }: { userId: string }) {
+  return TransactionService.getTransactionPageData(userId);
+}
+
+export async function getCategoryPageData({ userId }: { userId: string }) {
+  return TransactionService.getCategoryPageData(userId);
+}
+
+export async function getAnalysePageData({ userId }: { userId: string }) {
+  return TransactionService.getAnalysePageData(userId);
+}
+
+export async function getBudgetPageData({ userId }: { userId: string }) {
+  return TransactionService.getBudgetPageData(userId);
+}
+
+export async function getHistoryPageData({
+  userId,
+  months,
+}: {
+  userId: string;
+  months: { year: number; month: number }[];
+}) {
+  return TransactionService.getHistoryPageData(userId, months);
+}
+
+// ─── User Actions ─────────────────────────────────────────────
+
+export async function getUserTheme({ userId }: { userId: string }) {
+  return UserService.getTheme(userId);
+}
+
+export async function updateUserTheme({
+  userId,
+  themeColor,
+  themeMode,
+}: {
+  userId: string;
+  themeColor?: string;
+  themeMode?: string;
+}) {
+  return UserService.updateTheme(userId, themeColor, themeMode);
+}
+
+export async function getUserSettings({ userId }: { userId: string }) {
+  return UserService.getSettings(userId);
+}
+
+export async function updateUserSettings({ userId, name }: { userId: string; name: string }) {
+  return UserService.updateSettings(userId, name);
+}

@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createTransaction } from "@/app/actions/transaction";
 import { useUser } from "@/utils/user-global";
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/constants";
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -22,21 +23,8 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const expenseCategories = [
-    { id: "food", name: "อาหาร", icon: "🍜" },
-    { id: "travel", name: "เดินทาง", icon: "🚌" },
-    { id: "entertainment", name: "บันเทิง", icon: "🎮" },
-    { id: "health", name: "สุขภาพ", icon: "🏥" },
-    { id: "shopping", name: "ช้อปปิ้ง", icon: "🛍️" },
-    { id: "education", name: "การศึกษา", icon: "📚" },
-    { id: "utilities", name: "ค่าน้ำไฟ", icon: "💡" },
-    { id: "others", name: "อื่นๆ", icon: "📦" },
-  ];
-
-  const incomeCategories = [
-    { id: "salary", name: "เงินเดือนประจำ", icon: "💰" },
-    { id: "extra", name: "รายได้เพิ่มเติม", icon: "📈" },
-  ];
+  const expenseCategories = EXPENSE_CATEGORIES;
+  const incomeCategories = INCOME_CATEGORIES;
 
   const resetForm = () => {
     setType("expense");

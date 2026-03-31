@@ -2,13 +2,10 @@
 
 import { Transaction } from "@/generated/prisma/client";
 import { useState } from "react";
+import { UI_COLORS, cardStyle as baseCardStyle } from "@/lib/constants";
+import { PageHeader } from "./page-header";
 
-const THEME_COLOR = "#2563be";
-const BG_COLOR = "#f4f4f5";
-const CARD_BG = "#ffffff";
-const BORDER_COLOR = "#e4e4e7";
-const TEXT_MAIN = "#09090b";
-const TEXT_SUB = "#71717a";
+const { THEME: THEME_COLOR, BG: BG_COLOR, CARD_BG, BORDER: BORDER_COLOR, TEXT_MAIN, TEXT_SUB } = UI_COLORS;
 
 export function DashBoard({
   transactions,
@@ -32,11 +29,7 @@ export function DashBoard({
   }));
 
   const cardStyle = {
-    background: CARD_BG,
-    border: `1px solid ${BORDER_COLOR}`,
-    borderRadius: "24px",
-    padding: "24px",
-    boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.05)",
+    ...baseCardStyle,
   };
 
   const filterButtonStyle = (name: string) => ({
