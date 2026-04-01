@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Kanit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./theme-provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const kanit = Kanit({
+  subsets: ["latin", "thai"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-kanit",
 });
 
 const geistMono = Geist_Mono({
@@ -25,7 +26,12 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${kanit.variable} ${geistMono.variable} antialiased`}
+        style={{
+          fontFamily: "var(--font-kanit), system-ui, sans-serif",
+        }}
+      >
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
