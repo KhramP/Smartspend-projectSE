@@ -115,7 +115,7 @@ function SidebarInner({ collapsed, onNavigate }: { collapsed?: boolean; onNaviga
             S
           </text>
         </svg>
-        {!collapsed && <span className="text-lg font-bold text-white tracking-tight">SmartSpend</span>}
+        {!collapsed && <span className="text-lg font-bold text-[var(--text-primary)] tracking-tight">SmartSpend</span>}
       </div>
 
       {/* Navigation */}
@@ -146,8 +146,8 @@ function SidebarInner({ collapsed, onNavigate }: { collapsed?: boolean; onNaviga
                   collapsed && "justify-center px-2",
                 )}
               >
-                <div className="size-[18px] rounded bg-white/10 animate-pulse shrink-0" />
-                {!collapsed && <div className="h-3.5 w-24 rounded bg-white/10 animate-pulse" />}
+                <div className="size-[18px] rounded bg-[var(--glass-border)] animate-pulse shrink-0" />
+                {!collapsed && <div className="h-3.5 w-24 rounded bg-[var(--glass-border)] animate-pulse" />}
               </div>
             ))
           ) : (
@@ -184,8 +184,8 @@ function SidebarInner({ collapsed, onNavigate }: { collapsed?: boolean; onNaviga
       <div className="border-t border-[var(--glass-border)] p-3 mt-auto">
         {isLoading ? (
           <div className={cn("flex items-center gap-3 rounded-xl px-3 py-2", collapsed && "justify-center")}>
-            <div className="size-9 animate-pulse rounded-full bg-white/10" />
-            {!collapsed && <div className="h-4 w-24 animate-pulse rounded bg-white/10" />}
+            <div className="size-9 animate-pulse rounded-full bg-[var(--glass-border)]" />
+            {!collapsed && <div className="h-4 w-24 animate-pulse rounded bg-[var(--glass-border)]" />}
           </div>
         ) : !user ? (
           <Link href="/login" onClick={onNavigate}>
@@ -246,10 +246,10 @@ export function SSideBar() {
     <>
       {/* Mobile hamburger */}
       <button
-        className="fixed top-4 left-4 z-40 flex items-center justify-center rounded-xl border border-[var(--glass-border)] bg-black/40 backdrop-blur-md p-2 shadow-lg md:hidden"
+        className="fixed top-4 left-4 z-40 flex items-center justify-center rounded-xl border border-[var(--glass-border)] bg-[var(--card-bg)] backdrop-blur-md p-2 shadow-lg md:hidden"
         onClick={() => setMobileOpen(true)}
       >
-        <Menu className="size-5 text-white" />
+        <Menu className="size-5 text-[var(--text-primary)]" />
       </button>
 
       {/* Mobile overlay */}
@@ -269,7 +269,7 @@ export function SSideBar() {
         style={{ background: "var(--sidebar-gradient)" }}
       >
         <button
-          className="absolute right-3 top-5 rounded-lg p-1 text-gray-400 hover:text-white transition"
+          className="absolute right-3 top-5 rounded-lg p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition"
           onClick={() => setMobileOpen(false)}
         >
           <X className="size-5" />
@@ -290,7 +290,7 @@ export function SSideBar() {
         {/* Collapse toggle */}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute -right-3 top-7 z-10 flex size-6 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[#1a1a1a] shadow-md transition-colors hover:bg-white/10"
+          className="absolute -right-3 top-7 z-10 flex size-6 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--card-bg)] shadow-md transition-colors hover:brightness-95"
         >
           {collapsed ? (
             <ChevronRight className="size-3.5 text-gray-400" />

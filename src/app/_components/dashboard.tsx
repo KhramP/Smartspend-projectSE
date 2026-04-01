@@ -135,20 +135,24 @@ export function DashBoard({
       {/* แถวที่ 1: การ์ดสถิติ 4 ใบ */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-6">
         <div className="stat-card glass-card text-center">
-          <p className="stat-label text-gray-400">รายรับเดือนนี้</p>
-          <h3 className="stat-value text-white text-3xl mt-2">฿{data.thisMonthIncome.toLocaleString()}</h3>
+          <p className="stat-label text-[var(--text-muted)]">รายรับเดือนนี้</p>
+          <h3 className="stat-value text-[var(--text-primary)] text-3xl mt-2">
+            ฿{data.thisMonthIncome.toLocaleString()}
+          </h3>
         </div>
         <div className="stat-card glass-card text-center">
-          <p className="stat-label text-gray-400">รายจ่ายเดือนนี้</p>
-          <h3 className="stat-value text-white text-3xl mt-2">฿{data.thisMonthExpense.toLocaleString()}</h3>
+          <p className="stat-label text-[var(--text-muted)]">รายจ่ายเดือนนี้</p>
+          <h3 className="stat-value text-[var(--text-primary)] text-3xl mt-2">
+            ฿{data.thisMonthExpense.toLocaleString()}
+          </h3>
         </div>
         <div className="stat-card glass-card text-center">
-          <p className="stat-label text-gray-400">คงเหลือ(รายรับ - รายจ่าย)</p>
-          <h3 className="stat-value text-white text-3xl mt-2">฿{data.balance.toLocaleString()}</h3>
+          <p className="stat-label text-[var(--text-muted)]">คงเหลือ(รายรับ - รายจ่าย)</p>
+          <h3 className="stat-value text-[var(--text-primary)] text-3xl mt-2">฿{data.balance.toLocaleString()}</h3>
         </div>
         <div className="stat-card glass-card text-center">
-          <p className="stat-label text-gray-400">รายจ่ายวันนี้</p>
-          <h3 className="stat-value text-white text-3xl mt-2">฿{data.todayExpense.toLocaleString()}</h3>
+          <p className="stat-label text-[var(--text-muted)]">รายจ่ายวันนี้</p>
+          <h3 className="stat-value text-[var(--text-primary)] text-3xl mt-2">฿{data.todayExpense.toLocaleString()}</h3>
         </div>
       </div>
 
@@ -157,13 +161,13 @@ export function DashBoard({
         {/* กราฟแท่ง (สรุปรายรับ-รายจ่าย) */}
         <div className="glass-card p-6 flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-medium text-gray-300">สรุปรายรับ-รายจ่าย</h3>
-            <div className="flex border border-gray-600 rounded-lg overflow-hidden bg-black/20">
+            <h3 className="text-lg font-medium text-[var(--text-secondary)]">สรุปรายรับ-รายจ่าย</h3>
+            <div className="flex border border-[var(--glass-border)] rounded-lg overflow-hidden bg-[var(--input-bg)]">
               {["7 วัน", "1 เดือน", "1 ปี"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setPeriod(tab)}
-                  className={`px-4 py-1.5 text-xs transition ${period === tab ? "bg-white text-black font-medium" : "text-gray-400 hover:text-white"}`}
+                  className={`px-4 py-1.5 text-xs transition ${period === tab ? "bg-[var(--menu-active-bg)] text-[var(--menu-active-text)] font-medium" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"}`}
                 >
                   {tab}
                 </button>
@@ -171,11 +175,11 @@ export function DashBoard({
             </div>
           </div>
 
-          <div className="flex-1 min-h-[250px] flex items-end justify-between pl-14 pr-2 pt-4 border-b border-gray-600 relative pb-6 mt-4">
+          <div className="flex-1 min-h-[250px] flex items-end justify-between pl-14 pr-2 pt-4 border-b border-[var(--glass-border)] relative pb-6 mt-4">
             <div className="absolute left-14 right-0 bottom-6 top-4 flex flex-col justify-between pointer-events-none z-0">
               {[1, 0.75, 0.5, 0.25].map((multiplier, idx) => (
-                <div key={idx} className="border-t border-dashed border-gray-500/30 w-full relative">
-                  <span className="absolute -left-14 -top-2.5 text-[10px] text-gray-400 w-12 text-right pr-2">
+                <div key={idx} className="border-t border-dashed border-[var(--glass-border)] w-full relative">
+                  <span className="absolute -left-14 -top-2.5 text-[10px] text-[var(--text-muted)] w-12 text-right pr-2">
                     {(maxVal * multiplier).toLocaleString()}
                   </span>
                 </div>
@@ -196,7 +200,7 @@ export function DashBoard({
                     title={`รายจ่าย: ฿${item.expense.toLocaleString()}`}
                   ></div>
                 </div>
-                <span className="text-xs text-gray-400 absolute bottom-1">{item.label}</span>
+                <span className="text-xs text-[var(--text-muted)] absolute bottom-1">{item.label}</span>
               </div>
             ))}
           </div>
@@ -204,11 +208,11 @@ export function DashBoard({
           <div className="flex justify-center gap-6 mt-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-500 rounded-sm"></div>
-              <span className="text-xs text-gray-400">รายรับ</span>
+              <span className="text-xs text-[var(--text-muted)]">รายรับ</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-red-500 rounded-sm"></div>
-              <span className="text-xs text-gray-400">รายจ่าย</span>
+              <span className="text-xs text-[var(--text-muted)]">รายจ่าย</span>
             </div>
           </div>
         </div>
@@ -216,14 +220,16 @@ export function DashBoard({
         {/* สัดส่วนค่าใช้จ่าย */}
         <div className="glass-card p-6 flex flex-col">
           <div className="mb-6 flex justify-between items-center">
-            <h3 className="text-lg font-medium text-white">สัดส่วนค่าใช้จ่าย</h3>
-            <p className="text-xs text-gray-400">{period}</p>
+            <h3 className="text-lg font-medium text-[var(--text-primary)]">สัดส่วนค่าใช้จ่าย</h3>
+            <p className="text-xs text-[var(--text-muted)]">{period}</p>
           </div>
 
           <div className="flex flex-col items-center flex-1">
-            <div className="flex flex-col items-center justify-center w-36 h-36 rounded-full border-4 border-gray-600 relative mb-8">
-              <span className="text-2xl font-semibold text-white">฿{totalExpense.toLocaleString()}</span>
-              <span className="text-[11px] text-gray-400">รายจ่ายรวม</span>
+            <div className="flex flex-col items-center justify-center w-36 h-36 rounded-full border-4 border-[var(--glass-border)] relative mb-8">
+              <span className="text-2xl font-semibold text-[var(--text-primary)]">
+                ฿{totalExpense.toLocaleString()}
+              </span>
+              <span className="text-[11px] text-[var(--text-muted)]">รายจ่ายรวม</span>
               <div className="absolute inset-[-4px] rounded-full border-4 border-transparent border-t-[var(--accent-green)] border-r-[var(--accent-green)] transform rotate-45"></div>
             </div>
 
@@ -231,12 +237,12 @@ export function DashBoard({
               {categoryStats.map((cat, idx) => (
                 <div key={idx} className="text-sm">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-gray-300 font-medium">{cat.name}</span>
-                    <span className="text-right text-white">
-                      {cat.amount} <span className="text-gray-400 text-xs ml-1">({cat.percent}%)</span>
+                    <span className="text-[var(--text-secondary)] font-medium">{cat.name}</span>
+                    <span className="text-right text-[var(--text-primary)]">
+                      {cat.amount} <span className="text-[var(--text-muted)] text-xs ml-1">({cat.percent}%)</span>
                     </span>
                   </div>
-                  <div className="w-full h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-[var(--bar-bg)] rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full"
                       style={{ width: `${cat.percent}%`, backgroundColor: cat.color }}
@@ -254,18 +260,18 @@ export function DashBoard({
         {/* ช่องงบประมาณเดือนนี้ */}
         <div className="glass-card p-6">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-medium text-gray-300">งบประมาณเดือนนี้</h3>
+            <h3 className="text-lg font-medium text-[var(--text-secondary)]">งบประมาณเดือนนี้</h3>
           </div>
           <div className="space-y-6">
             {budgetData.map((budget) => (
               <div key={budget.name}>
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-300">{budget.name}</span>
-                  <span className={budget.used > budget.total ? "text-red-400" : "text-gray-400"}>
+                  <span className="text-[var(--text-secondary)]">{budget.name}</span>
+                  <span className={budget.used > budget.total ? "text-red-400" : "text-[var(--text-muted)]"}>
                     ฿{budget.used.toLocaleString()} / {budget.total.toLocaleString()}
                   </span>
                 </div>
-                <div className="w-full h-3 bg-gray-800 border border-gray-600 rounded-sm overflow-hidden">
+                <div className="w-full h-3 bg-[var(--bar-bg)] border border-[var(--glass-border)] rounded-sm overflow-hidden">
                   <div
                     className={`h-full ${budget.used > budget.total ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" : "bg-[var(--accent-gold)] shadow-[0_0_10px_rgba(255,215,0,0.5)]"}`}
                     style={{ width: `${Math.min((budget.used / budget.total) * 100, 100)}%` }}
@@ -279,24 +285,26 @@ export function DashBoard({
         {/* ช่องรายการล่าสุด */}
         <div className="glass-card p-0 overflow-hidden flex flex-col">
           <div className="p-6 pb-4">
-            <h3 className="text-lg font-medium text-gray-300">รายการล่าสุด</h3>
+            <h3 className="text-lg font-medium text-[var(--text-secondary)]">รายการล่าสุด</h3>
           </div>
 
-          <div className="flex-1 border-t border-gray-700">
+          <div className="flex-1 border-t border-[var(--glass-border)]">
             {transactions.slice(0, 5).map((tx, idx) => (
               <div
                 key={idx}
-                className="flex justify-between items-center p-4 border-b border-gray-700 bg-black/10 hover:bg-black/30 transition"
+                className="flex justify-between items-center p-4 border-b border-[var(--glass-border)] bg-[var(--hover-bg)] hover:brightness-95 transition"
               >
                 <div>
-                  <div className="text-white text-sm">{tx.name}</div>
-                  <div className="text-gray-500 text-xs">{tx.category}</div>
+                  <div className="text-[var(--text-primary)] text-sm">{tx.name}</div>
+                  <div className="text-[var(--text-muted)] text-xs">{tx.category}</div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-sm ${tx.type === "income" ? "text-green-400" : "text-gray-300"}`}>
+                  <div
+                    className={`text-sm ${tx.type === "income" ? "text-green-500" : "text-[var(--text-secondary)]"}`}
+                  >
                     {tx.type === "expense" ? "-" : "+"}฿{tx.amount.toLocaleString()}
                   </div>
-                  <div className="text-gray-500 text-xs">
+                  <div className="text-[var(--text-muted)] text-xs">
                     {new Date(tx.date).toLocaleDateString("th-TH", { day: "2-digit", month: "short" })}
                   </div>
                 </div>

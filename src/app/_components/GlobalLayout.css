@@ -1,11 +1,46 @@
 :root {
+  --sidebar-gradient: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+  --accent-green: #9bd104ff;
+  --muted-text: #6b7280;
+  --glass: rgba(0, 0, 0, 0.03);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --stat-card-border: rgba(0, 0, 0, 0.12);
+  --accent-gold: #d4a800;
+  --body-bg: linear-gradient(135deg, #f0f2f5 0%, #dfe6ed 100%);
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --input-bg: rgba(255, 255, 255, 0.6);
+  --hover-bg: rgba(0, 0, 0, 0.04);
+  --menu-active-bg: #111827;
+  --menu-active-text: #fff;
+  --menu-border: #d1d5db;
+  --table-hover: rgba(0, 0, 0, 0.02);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --bar-bg: rgba(0, 0, 0, 0.06);
+}
+
+.dark {
   --sidebar-gradient: linear-gradient(180deg, #1a0505 0%, #0a0a0aff 100%);
-  --accent-green: #9bd104ff; /* สีเดียวกับปุ่ม Login */
   --muted-text: #666;
   --glass: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
   --stat-card-border: rgba(255, 255, 255, 0.2);
   --accent-gold: #ffd700;
+  --body-bg: linear-gradient(135deg, #1a0505 0%, #0a213f 100%);
+  --text-primary: #ffffff;
+  --text-secondary: #e5e7eb;
+  --text-muted: #9ca3af;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --input-bg: rgba(0, 0, 0, 0.2);
+  --hover-bg: rgba(255, 255, 255, 0.05);
+  --menu-active-bg: #eee;
+  --menu-active-text: #000;
+  --menu-border: var(--muted-text);
+  --table-hover: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --bar-bg: rgba(255, 255, 255, 0.06);
 }
 
 * {
@@ -14,8 +49,8 @@
 
 body {
   font-family: "Inter", system-ui, sans-serif;
-  background: linear-gradient(135deg, #1a0505 0%, #0a213f 100%);
-  color: #fff;
+  background: var(--body-bg);
+  color: var(--text-primary);
   margin: 0;
   min-height: 100vh;
 }
@@ -69,7 +104,7 @@ body {
   padding: 10px 20px;
   text-decoration: none;
   color: var(--muted-text);
-  border: 1px solid var(--muted-text);
+  border: 1px solid var(--menu-border);
   border-radius: 20px;
   margin-bottom: 12px;
   transition: all 0.3s ease;
@@ -77,21 +112,21 @@ body {
 }
 
 .menu-item:hover {
-  border-color: #fff;
-  color: #fff;
-  background: var(--glass);
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+  background: var(--hover-bg);
 }
 
 .menu-item.active {
-  background-color: #eee;
-  color: #000;
-  border-color: #eee;
+  background-color: var(--menu-active-bg);
+  color: var(--menu-active-text);
+  border-color: var(--menu-active-bg);
   font-weight: 500;
 }
 
 .menu-item.active:hover {
-  background-color: #fff;
-  color: #000;
+  background-color: var(--menu-active-bg);
+  color: var(--menu-active-text);
 }
 
 .premium-item {
@@ -107,7 +142,7 @@ body {
 }
 
 .glass-card {
-  background: var(--glass);
+  background: var(--card-bg);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   backdrop-filter: blur(20px);
@@ -119,7 +154,7 @@ body {
   border: none;
   border-radius: 12px;
   background: var(--accent-green);
-  color: #fff;
+  color: var(--menu-active-text);
   font-weight: 600;
   cursor: pointer;
   font-size: 16px;
@@ -141,14 +176,14 @@ body {
 
 .stat-label {
   font-size: 14px;
-  color: #fff;
+  color: var(--text-muted);
   margin-bottom: 10px;
 }
 
 .stat-value {
   font-size: 32px;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .category-grid {
@@ -188,7 +223,7 @@ body {
 
 .gold-progress-bar {
   height: 8px;
-  background: #eee;
+  background: var(--bar-bg);
   border-radius: 4px;
   margin-top: 12px;
 }
@@ -212,10 +247,10 @@ body {
 
 .btn-premium {
   padding: 10px 16px;
-  border: 1px solid var(--accent-green);
+  border: 1px solid var(--glass-border);
   border-radius: 8px;
-  background: #1a1a1aff;
-  color: #fff;
+  background: var(--card-bg);
+  color: var(--text-primary);
   cursor: pointer;
   font-size: 14px;
   display: flex;
@@ -231,13 +266,13 @@ body {
 .transaction-table th {
   padding: 16px;
   text-align: left;
-  color: var(--muted-text);
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .transaction-table td {
   padding: 16px;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 14px;
 }
 
@@ -249,8 +284,8 @@ body {
   padding: 10px 16px;
   margin-bottom: 24px;
   background: transparent;
-  border: 1px solid var(--muted-text);
-  color: #fff;
+  border: 1px solid var(--menu-border);
+  color: var(--text-primary);
   border-radius: 20px;
   cursor: pointer;
   font-size: 14px;
@@ -295,9 +330,9 @@ body {
 }
 
 .outline-item:hover {
-  border-color: #fff;
-  color: #fff;
-  background: var(--glass);
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+  background: var(--hover-bg);
 }
 
 .user-profile-box {
@@ -306,7 +341,7 @@ body {
   gap: 15px;
   margin-top: 15px;
   padding: 16px;
-  border: 1px solid var(--muted-text);
+  border: 1px solid var(--glass-border);
   border-radius: 8px;
   background: transparent;
 }
@@ -315,7 +350,7 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid var(--muted-text);
+  border: 1px solid var(--glass-border);
   background-color: transparent;
 }
 
@@ -327,7 +362,7 @@ body {
 .user-name {
   font-size: 15px;
   font-weight: 500;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .user-plan {
@@ -352,7 +387,7 @@ body {
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 24px;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .type-toggle-box {
@@ -368,7 +403,7 @@ body {
   padding: 12px;
   background: transparent;
   border: none;
-  color: var(--muted-text);
+  color: var(--text-muted);
   border-radius: 6px;
   cursor: pointer;
   font-size: 16px;
@@ -377,8 +412,8 @@ body {
 }
 
 .type-btn.active {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: var(--hover-bg);
+  color: var(--text-primary);
 }
 
 .form-group {
@@ -395,10 +430,10 @@ body {
 .form-input {
   width: 100%;
   padding: 12px 16px;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--input-bg);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 15px;
   transition: border-color 0.3s ease;
 }
@@ -408,7 +443,7 @@ body {
   border-color: var(--accent-green);
 }
 
-.form-input::-webkit-calendar-picker-indicator {
+.dark .form-input::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
 
@@ -441,10 +476,10 @@ body {
   justify-content: center;
   gap: 8px;
   padding: 12px 8px;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--input-bg);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
-  color: var(--muted-text);
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 0.2s;
   font-size: 13px;
@@ -488,8 +523,8 @@ body {
   flex: 1;
   padding: 16px;
   background: transparent;
-  border: 1px solid #555;
-  color: #fff;
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
@@ -497,7 +532,7 @@ body {
 }
 
 .btn-cancel:hover {
-  border-color: #fff;
+  border-color: var(--text-primary);
   background: rgba(255, 255, 255, 0.05);
 }
 
@@ -559,4 +594,107 @@ body {
   .stat-value {
     font-size: 22px;
   }
+}
+
+/* ===== Light-mode overrides for Tailwind utility classes ===== */
+/* These remap hardcoded dark-themed Tailwind classes in light mode */
+
+:root:not(.dark) .text-white {
+  color: var(--text-primary) !important;
+}
+:root:not(.dark) .text-gray-300 {
+  color: var(--text-secondary) !important;
+}
+:root:not(.dark) .text-gray-400,
+:root:not(.dark) .text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+/* Background overrides */
+:root:not(.dark) .bg-black\/5,
+:root:not(.dark) .bg-black\/10,
+:root:not(.dark) .bg-black\/20,
+:root:not(.dark) .bg-black\/30,
+:root:not(.dark) .bg-black\/40,
+:root:not(.dark) .bg-black\/60 {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+:root:not(.dark) .bg-white\/5,
+:root:not(.dark) .bg-white\/10,
+:root:not(.dark) .bg-white\/20 {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+:root:not(.dark) .hover\:bg-black\/30:hover {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+:root:not(.dark) .hover\:bg-white\/5:hover,
+:root:not(.dark) .hover\:bg-white\/10:hover,
+:root:not(.dark) .hover\:bg-white\/20:hover {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Border overrides */
+:root:not(.dark) .border-white\/10,
+:root:not(.dark) .border-white\/20,
+:root:not(.dark) .border-white\/40 {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+:root:not(.dark) .border-gray-600,
+:root:not(.dark) .border-gray-700 {
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+:root:not(.dark) .hover\:border-white:hover {
+  border-color: var(--text-primary) !important;
+}
+:root:not(.dark) .hover\:border-gray-400:hover,
+:root:not(.dark) .hover\:border-gray-500:hover {
+  border-color: rgba(0, 0, 0, 0.2) !important;
+}
+:root:not(.dark) .\!border-white\/40 {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Hover text overrides */
+:root:not(.dark) .hover\:text-white:hover {
+  color: var(--text-primary) !important;
+}
+
+/* Form input overrides */
+:root:not(.dark) input.bg-black\/20,
+:root:not(.dark) textarea.bg-black\/20 {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Modal backdrop stays dark in both modes */
+:root:not(.dark) .backdrop-blur-sm.bg-black\/60 {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Skeleton pulse */
+:root:not(.dark) .animate-pulse.bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Recharts / chart area */
+:root:not(.dark) .bg-gray-800 {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+:root:not(.dark) .bg-gray-700 {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Category hover */
+:root:not(.dark) .hover\:-translate-y-1.hover\:border-white\/20:hover {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Combo selectors for modal glass */
+:root:not(.dark) .backdrop-blur-xl {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Calendar picker in light mode: don't invert */
+:root:not(.dark) [class*="calendar-picker-indicator"] {
+  filter: none !important;
 }

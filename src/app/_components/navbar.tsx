@@ -11,7 +11,7 @@ export function Navbar() {
     <div className="relative">
       <div
         className="top-0 z-30 h-[56px] md:h-[64px] w-full flex items-center justify-end px-4 sm:px-6 pl-14 md:pl-6 border-b border-[var(--glass-border)]"
-        style={{ background: "rgba(10, 10, 10, 0.6)", backdropFilter: "blur(20px)" }}
+        style={{ background: "var(--card-bg)", backdropFilter: "blur(20px)" }}
       >
         <button
           className="add-transaction-btn !rounded-[20px] !py-2.5 !px-5 text-sm font-semibold text-black hover:brightness-110 transition-all"

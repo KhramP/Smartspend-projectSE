@@ -124,23 +124,25 @@ export function ThemeClient({
               ตัวอย่าง
             </h3>
             <div
-              className={`p-6 rounded-2xl border border-dashed border-white/10 ${
-                selectedMode === "dark" ? "bg-[#1a1a2e]" : "bg-black/20"
+              className={`p-6 rounded-2xl border border-dashed ${
+                selectedMode === "dark" ? "bg-[#1a1a2e] border-white/10" : "bg-white border-gray-200"
               }`}
             >
               <div className="flex gap-3 items-center mb-4">
                 <div className="w-10 h-10 rounded-xl" style={{ background: selectedColor }} />
                 <div>
-                  <p className={`text-sm font-bold ${selectedMode === "dark" ? "text-white" : "text-white"}`}>
+                  <p className={`text-sm font-bold ${selectedMode === "dark" ? "text-white" : "text-gray-900"}`}>
                     ตัวอย่างหัวข้อ
                   </p>
-                  <p className={`text-xs ${selectedMode === "dark" ? "text-gray-400" : "text-gray-400"}`}>
+                  <p className={`text-xs ${selectedMode === "dark" ? "text-gray-400" : "text-gray-500"}`}>
                     คำอธิบายรายละเอียด
                   </p>
                 </div>
               </div>
               <button
-                className="px-6 py-2.5 text-white text-sm font-bold rounded-xl transition-transform hover:scale-105"
+                className={`px-6 py-2.5 text-sm font-bold rounded-xl transition-transform hover:scale-105 ${
+                  selectedMode === "dark" ? "text-white" : "text-white"
+                }`}
                 style={{ background: selectedColor }}
               >
                 ปุ่มตัวอย่าง

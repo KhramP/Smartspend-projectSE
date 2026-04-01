@@ -32,7 +32,7 @@ export function CategoryClient({ data }: { data: CategoryPageData }) {
             />
             <div>
               <p className="text-gray-400 text-xs font-bold uppercase mb-1">{s.label}</p>
-              <p className={`text-2xl font-extrabold text-white`}>{s.value}</p>
+              <p className={`text-2xl font-bold text-white`}>{s.value}</p>
             </div>
           </div>
         ))}

@@ -170,7 +170,7 @@ export function TransactionClient({
                   </td>
                   <td style={{ textAlign: "right" }}>
                     <span
-                      className="font-extrabold text-base"
+                      className="font-bold text-base"
                       style={{ color: tx.type === "income" ? "#10b981" : "#ef4444" }}
                     >
                       {tx.type === "income" ? "+" : "-"}฿{tx.amount.toLocaleString()}
