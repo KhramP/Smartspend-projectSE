@@ -311,40 +311,21 @@ export function TransactionClient({
             {/* Categories Grid */}
             <div className="mb-5">
               <label className="mb-2 block text-sm text-gray-500">หมวดหมู่</label>
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                <div className="grid flex-3 grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
-                  {EXPENSE_CATEGORIES.map((cat) => (
-                    <div
-                      key={cat.id}
-                      className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border px-2 py-3 text-[13px] transition-all duration-200 ${
-                        editForm.category === cat.name
-                          ? "border-[#9bd104] bg-[#9bd104]/10 text-white"
-                          : "border-white/10 bg-black/20 text-gray-500 hover:border-[#9bd104] hover:bg-[#9bd104]/10 hover:text-white"
-                      }`}
-                      onClick={() => setEditForm((p) => ({ ...p, category: cat.name, type: "expense" }))}
-                    >
-                      <span className="text-xl">{cat.icon}</span>
-                      <span>{cat.name}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex flex-1 flex-row sm:flex-col justify-start gap-2 sm:gap-3 border-t sm:border-t-0 sm:border-l border-white/10 pt-4 sm:pt-0 sm:pl-6">
-                  {INCOME_CATEGORIES.map((cat) => (
-                    <div
-                      key={cat.id}
-                      className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border px-2 py-3 text-[13px] transition-all duration-200 ${
-                        editForm.category === cat.name
-                          ? "border-[#9bd104] bg-[#9bd104]/10 text-white"
-                          : "border-white/10 bg-black/20 text-gray-500 hover:border-[#9bd104] hover:bg-[#9bd104]/10 hover:text-white"
-                      }`}
-                      onClick={() => setEditForm((p) => ({ ...p, category: cat.name, type: "income" }))}
-                    >
-                      <span className="text-xl">{cat.icon}</span>
-                      <span>{cat.name}</span>
-                    </div>
-                  ))}
-                </div>
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
+                {(editForm.type === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES).map((cat) => (
+                  <div
+                    key={cat.id}
+                    className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border px-2 py-3 text-[13px] transition-all duration-200 ${
+                      editForm.category === cat.name
+                        ? "border-[#9bd104] bg-[#9bd104]/10 text-white"
+                        : "border-white/10 bg-black/20 text-gray-500 hover:border-[#9bd104] hover:bg-[#9bd104]/10 hover:text-white"
+                    }`}
+                    onClick={() => setEditForm((p) => ({ ...p, category: cat.name }))}
+                  >
+                    <span className="text-xl">{cat.icon}</span>
+                    <span>{cat.name}</span>
+                  </div>
+                ))}
               </div>
             </div>
 

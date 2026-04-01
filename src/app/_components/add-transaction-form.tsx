@@ -123,14 +123,20 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
             <button
               type="button"
               className={`flex-1 cursor-pointer rounded-md border-none px-3 py-3 text-base font-medium transition-all duration-300 ${type === "expense" ? "bg-white/10 text-white" : "bg-transparent text-gray-500"}`}
-              onClick={() => setType("expense")}
+              onClick={() => {
+                setType("expense");
+                setSelectedCategory("");
+              }}
             >
               รายจ่าย
             </button>
             <button
               type="button"
               className={`flex-1 cursor-pointer rounded-md border-none px-3 py-3 text-base font-medium transition-all duration-300 ${type === "income" ? "bg-white/10 text-white" : "bg-transparent text-gray-500"}`}
-              onClick={() => setType("income")}
+              onClick={() => {
+                setType("income");
+                setSelectedCategory("");
+              }}
             >
               รายรับ
             </button>
@@ -165,40 +171,21 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
           {/* Categories Grid */}
           <div className="mb-5">
             <label className="mb-2 block text-sm text-gray-500">หมวดหมู่</label>
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-              <div className="grid flex-3 grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
-                {expenseCategories.map((cat) => (
-                  <div
-                    key={cat.id}
-                    className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border px-2 py-3 text-[13px] transition-all duration-200 ${
-                      selectedCategory === cat.name
-                        ? "border-[#9bd104] bg-[#9bd104]/10 text-white"
-                        : "border-white/10 bg-black/20 text-gray-500 hover:border-[#9bd104] hover:bg-[#9bd104]/10 hover:text-white"
-                    }`}
-                    onClick={() => setSelectedCategory(cat.name)}
-                  >
-                    <span className="text-xl">{cat.icon}</span>
-                    <span>{cat.name}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-1 flex-row sm:flex-col justify-start gap-2 sm:gap-3 border-t sm:border-t-0 sm:border-l border-white/10 pt-4 sm:pt-0 sm:pl-6">
-                {incomeCategories.map((cat) => (
-                  <div
-                    key={cat.id}
-                    className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border px-2 py-3 text-[13px] transition-all duration-200 ${
-                      selectedCategory === cat.name
-                        ? "border-[#9bd104] bg-[#9bd104]/10 text-white"
-                        : "border-white/10 bg-black/20 text-gray-500 hover:border-[#9bd104] hover:bg-[#9bd104]/10 hover:text-white"
-                    }`}
-                    onClick={() => setSelectedCategory(cat.name)}
-                  >
-                    <span className="text-xl">{cat.icon}</span>
-                    <span>{cat.name}</span>
-                  </div>
-                ))}
-              </div>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
+              {(type === "expense" ? expenseCategories : incomeCategories).map((cat) => (
+                <div
+                  key={cat.id}
+                  className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border px-2 py-3 text-[13px] transition-all duration-200 ${
+                    selectedCategory === cat.name
+                      ? "border-[#9bd104] bg-[#9bd104]/10 text-white"
+                      : "border-white/10 bg-black/20 text-gray-500 hover:border-[#9bd104] hover:bg-[#9bd104]/10 hover:text-white"
+                  }`}
+                  onClick={() => setSelectedCategory(cat.name)}
+                >
+                  <span className="text-xl">{cat.icon}</span>
+                  <span>{cat.name}</span>
+                </div>
+              ))}
             </div>
           </div>
 
