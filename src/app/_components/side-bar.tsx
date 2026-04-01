@@ -136,21 +136,39 @@ function SidebarInner({ collapsed, onNavigate }: { collapsed?: boolean; onNaviga
               </span>
             </span>
           </SectionLabel>
-          {PREMIUM_LINKS.map((link) => (
-            <NavItem key={link.href} {...link} collapsed={collapsed} onClick={onNavigate} locked={!isPro} />
-          ))}
-          {!isPro && (
-            <Link
-              href="/premium"
-              onClick={onNavigate}
-              className={cn(
-                "flex items-center gap-2 rounded-[20px] px-3 py-2 text-xs font-bold text-[var(--accent-gold)] border border-[var(--accent-gold)]/30 bg-[var(--accent-gold)]/10 hover:bg-[var(--accent-gold)]/20 transition-all mt-2",
-                collapsed && "justify-center px-2",
+          {isLoading ? (
+            // Skeleton placeholder to prevent layout shift / flicker
+            Array.from({ length: PREMIUM_LINKS.length }, (_, i) => (
+              <div
+                key={i}
+                className={cn(
+                  "flex items-center gap-3 rounded-[20px] px-3 py-2.5 mb-2",
+                  collapsed && "justify-center px-2",
+                )}
+              >
+                <div className="size-[18px] rounded bg-white/10 animate-pulse shrink-0" />
+                {!collapsed && <div className="h-3.5 w-24 rounded bg-white/10 animate-pulse" />}
+              </div>
+            ))
+          ) : (
+            <>
+              {PREMIUM_LINKS.map((link) => (
+                <NavItem key={link.href} {...link} collapsed={collapsed} onClick={onNavigate} locked={!isPro} />
+              ))}
+              {!isPro && (
+                <Link
+                  href="/premium"
+                  onClick={onNavigate}
+                  className={cn(
+                    "flex items-center gap-2 rounded-[20px] px-3 py-2 text-xs font-bold text-[var(--accent-gold)] border border-[var(--accent-gold)]/30 bg-[var(--accent-gold)]/10 hover:bg-[var(--accent-gold)]/20 transition-all mt-2",
+                    collapsed && "justify-center px-2",
+                  )}
+                >
+                  <Crown className="size-3.5 shrink-0" />
+                  {!collapsed && <span>อัปเกรด Premium</span>}
+                </Link>
               )}
-            >
-              <Crown className="size-3.5 shrink-0" />
-              {!collapsed && <span>อัปเกรด Premium</span>}
-            </Link>
+            </>
           )}
         </div>
 
