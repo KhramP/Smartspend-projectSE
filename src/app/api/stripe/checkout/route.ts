@@ -23,6 +23,14 @@ export async function POST() {
 
   // Get or create Stripe customer
   let customerId = user.stripeCustomerId;
+  if (customerId) {
+    // Verify the customer still exists in the current Stripe environment
+    try {
+      await stripe.customers.retrieve(customerId);
+    } catch {
+      customerId = null;
+    }
+  }
   if (!customerId) {
     const customer = await stripe.customers.create({
       email: user.email,
