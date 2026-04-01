@@ -16,7 +16,7 @@ export function BudgetClient({ data, userId }: { data: BudgetPageData; userId: s
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
 
-  const totalBudget = data.totalBudget > 0 ? data.totalBudget : Math.max(data.totalUsed * 1.3, 1);
+  const totalBudget = data.totalBudget > 0 ? data.totalBudget : 0;
   const remaining = totalBudget - data.totalUsed;
   const overallPercent = totalBudget > 0 ? (data.totalUsed / totalBudget) * 100 : 0;
 
@@ -87,12 +87,12 @@ export function BudgetClient({ data, userId }: { data: BudgetPageData; userId: s
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {data.categorySpending.map((b) => {
+            const hasBudget = b.budget > 0;
             const icon = getCategoryIcon(b.name);
-            const catBudget = b.budget > 0 ? b.budget : Math.max(b.used * 1.3, 1);
+            const catBudget = b.budget > 0 ? b.budget : 0;
             const percent = catBudget > 0 ? (b.used / catBudget) * 100 : 0;
             const isOver = percent > 100;
-            const hasBudget = b.budget > 0;
-
+            
             return (
               <div key={b.name} className="glass-card p-5 relative overflow-hidden">
                 <div className="flex justify-between items-start mb-4">
@@ -102,8 +102,8 @@ export function BudgetClient({ data, userId }: { data: BudgetPageData; userId: s
                     </h4>
                     <p className="text-[10px] text-gray-400">{hasBudget ? "งบเดือน" : "ยังไม่ตั้งงบ"}</p>
                   </div>
-                  <div className={`text-sm font-bold ${isOver ? "text-red-500" : "text-[var(--accent-green)]"}`}>
-                    ใช้ไป {percent.toFixed(0)}%
+                  <div className={`text-sm font-bold ${isOver || !hasBudget ? "text-red-500" : "text-[var(--accent-green)]"}`}>
+                    {hasBudget ? `ใช้ไป ${percent.toFixed(0)}%` : "ยังไม่ตั้งงบ"}
                   </div>
                 </div>
 
@@ -120,8 +120,8 @@ export function BudgetClient({ data, userId }: { data: BudgetPageData; userId: s
 
                 <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full ${isOver ? "bg-red-500" : "bg-[var(--accent-gold)]"}`}
-                    style={{ width: `${Math.min(percent, 100)}%` }}
+                    className={`h-full rounded-full ${isOver || !hasBudget ? "bg-red-500" : "bg-[var(--accent-gold)]"}`}
+                    style={{ width: `${hasBudget ? Math.min(percent, 100) : 100}%` }}
                   ></div>
                 </div>
               </div>

@@ -4,7 +4,7 @@ import { authClient } from "@/lib/auth-client";
 import { User } from "better-auth";
 import useSWR from "swr";
 
-export type AccountInfo = Pick<User, "id" | "name" | "email" | "image">;
+export type AccountInfo = Pick<User, "id" | "name" | "email" | "image"> & { plan?: string };
 
 const fetcher = async ([url]: [string, string]): Promise<AccountInfo> => {
   const response = await fetch(url, {

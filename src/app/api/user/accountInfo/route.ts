@@ -7,7 +7,7 @@ async function getUserAccountInfo(userId: string) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { name: true, image: true, email: true },
+      select: { name: true, image: true, email: true, plan: true },
     });
 
     if (!user) {
@@ -19,6 +19,7 @@ async function getUserAccountInfo(userId: string) {
       name: user.name,
       image: user.image,
       email: user.email,
+      plan: user.plan,
     };
   } catch (error) {
     console.error("Failed to fetch user account info:", error);

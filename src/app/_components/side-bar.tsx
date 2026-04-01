@@ -12,8 +12,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  Crown,
   FolderOpen,
   LayoutDashboard,
+  Lock,
   LogOut,
   LucideIcon,
   Menu,
@@ -51,29 +53,34 @@ function NavItem({
   label,
   collapsed,
   onClick,
+  locked,
 }: {
   href: string;
   icon: LucideIcon;
   label: string;
   collapsed?: boolean;
   onClick?: () => void;
+  locked?: boolean;
 }) {
   const pathname = usePathname();
   const isActive = pathname === href;
+  const actualHref = locked ? "/premium" : href;
 
   return (
     <Link
-      href={href}
+      href={actualHref}
       title={collapsed ? label : undefined}
       onClick={onClick}
       className={cn(
         "menu-item group justify-start! mb-2! gap-3 text-sm font-medium transition-all duration-200",
         collapsed ? "justify-center! px-2!" : "",
-        isActive ? "active" : "",
+        isActive && !locked ? "active" : "",
+        locked ? "opacity-50" : "",
       )}
     >
       <Icon className={cn("shrink-0", collapsed ? "size-5" : "size-[18px]")} />
       {!collapsed && <span className="truncate">{label}</span>}
+      {!collapsed && locked && <Lock className="size-3 ml-auto text-gray-500 shrink-0" />}
     </Link>
   );
 }
@@ -88,6 +95,7 @@ function SectionLabel({ children, collapsed }: { children: React.ReactNode; coll
 function SidebarInner({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
   const { user, isLoading } = useUser();
   const router = useRouter();
+  const isPro = user?.plan === "PRO";
 
   return (
     <div className="flex h-full flex-col">
@@ -129,8 +137,21 @@ function SidebarInner({ collapsed, onNavigate }: { collapsed?: boolean; onNaviga
             </span>
           </SectionLabel>
           {PREMIUM_LINKS.map((link) => (
-            <NavItem key={link.href} {...link} collapsed={collapsed} onClick={onNavigate} />
+            <NavItem key={link.href} {...link} collapsed={collapsed} onClick={onNavigate} locked={!isPro} />
           ))}
+          {!isPro && (
+            <Link
+              href="/premium"
+              onClick={onNavigate}
+              className={cn(
+                "flex items-center gap-2 rounded-[20px] px-3 py-2 text-xs font-bold text-[var(--accent-gold)] border border-[var(--accent-gold)]/30 bg-[var(--accent-gold)]/10 hover:bg-[var(--accent-gold)]/20 transition-all mt-2",
+                collapsed && "justify-center px-2",
+              )}
+            >
+              <Crown className="size-3.5 shrink-0" />
+              {!collapsed && <span>อัปเกรด Premium</span>}
+            </Link>
+          )}
         </div>
 
         <div>
