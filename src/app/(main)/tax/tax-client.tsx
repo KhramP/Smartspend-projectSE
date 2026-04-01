@@ -29,10 +29,10 @@ export function TaxClient({ userId, yearlyIncome }: { userId: string; yearlyInco
     { key: "donation", label: "เงินบริจาค (บาท)" },
   ];
 
-  const handleReset = () => {
-    setAnnualIncome(yearlyIncome);
-    setFields({ personalDeduction: 60000, lifeInsurance: 0, ssfRmf: 0, homeLoanInterest: 0, donation: 0 });
-  };
+  // const handleReset = () => {
+  //   setAnnualIncome(yearlyIncome);
+  //   setFields({ personalDeduction: 60000, lifeInsurance: 0, ssfRmf: 0, homeLoanInterest: 0, donation: 0 });
+  // };
 
   return (
     <div className="p-4 sm:p-6 lg:p-10">
@@ -165,7 +165,7 @@ export function TaxClient({ userId, yearlyIncome }: { userId: string; yearlyInco
           </div>
 
           {/* Action buttons */}
-          <div className="flex gap-4">
+          {/* <div className="flex gap-4">
             <button className="btn-save flex-1 py-5 text-xl">คำนวณภาษี</button>
             <button
               className="btn-cancel flex-1 py-5 text-xl"
@@ -174,7 +174,7 @@ export function TaxClient({ userId, yearlyIncome }: { userId: string; yearlyInco
             >
               ยกเลิก
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

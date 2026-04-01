@@ -22,19 +22,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [themeMode, setThemeMode] = useState("light");
   const [themeColor, setThemeColor] = useState("#2563eb");
 
-  const applyTheme = useCallback((mode: string) => {
+  const applyTheme = useCallback((mode: string, color: string) => {
     if (mode === "dark") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
+    document.documentElement.style.setProperty("--accent-green", color);
   }, []);
 
   const setTheme = useCallback(
     (mode: string, color: string) => {
       setThemeMode(mode);
       setThemeColor(color);
-      applyTheme(mode);
+      applyTheme(mode, color);
     },
     [applyTheme],
   );
@@ -46,9 +47,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         const res = await fetch("/api/user/theme");
         if (res.ok) {
           const data = await res.json();
-          setThemeMode(data.themeMode || "light");
-          setThemeColor(data.themeColor || "#2563eb");
-          applyTheme(data.themeMode || "light");
+          const mode = data.themeMode || "light";
+          const color = data.themeColor || "#2563eb";
+          setThemeMode(mode);
+          setThemeColor(color);
+          applyTheme(mode, color);
         }
       } catch {
         // Silently fail for unauthenticated users

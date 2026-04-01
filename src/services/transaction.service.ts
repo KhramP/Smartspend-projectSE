@@ -4,6 +4,7 @@
 import { TransactionRepository } from "@/repositories/transaction.repository";
 import { BudgetRepository } from "@/repositories/budget.repository";
 import { getMonthDateRange, getTodayDateRange, getCurrentDayOfMonth } from "@/lib/date-utils";
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/constants/categories";
 
 export const TransactionService = {
   async createTransaction(input: {
@@ -90,14 +91,37 @@ export const TransactionService = {
     const categoryData = await TransactionRepository.groupByCategory(userId, "expense", monthRange);
     const totalExpense = categoryData.reduce((sum, c) => sum + (c._sum.amount || 0), 0);
 
+    // Build a map of categories that have transactions
+    const catMap = new Map(categoryData.map((c) => [c.category || "อื่นๆ", c]));
+
+    // Merge all defined categories (expense + income) with actual data
+    const allCategories = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES];
+    const categories = allCategories.map((cat) => {
+      const match = catMap.get(cat.name);
+      return {
+        name: cat.name,
+        count: match ? match._count : 0,
+        amount: match ? match._sum.amount || 0 : 0,
+        percent: match && totalExpense > 0 ? Math.round(((match._sum.amount || 0) / totalExpense) * 100) : 0,
+      };
+    });
+
+    // Also include any categories from data that aren't in our predefined list
+    for (const c of categoryData) {
+      const name = c.category || "อื่นๆ";
+      if (!allCategories.some((cat) => cat.name === name)) {
+        categories.push({
+          name,
+          count: c._count,
+          amount: c._sum.amount || 0,
+          percent: totalExpense > 0 ? Math.round(((c._sum.amount || 0) / totalExpense) * 100) : 0,
+        });
+      }
+    }
+
     return {
-      categories: categoryData.map((c) => ({
-        name: c.category || "อื่นๆ",
-        count: c._count,
-        amount: c._sum.amount || 0,
-        percent: totalExpense > 0 ? Math.round(((c._sum.amount || 0) / totalExpense) * 100) : 0,
-      })),
-      totalCategories: categoryData.length,
+      categories,
+      totalCategories: categories.length,
       totalTransactions: categoryData.reduce((sum, c) => sum + c._count, 0),
       totalAmount: totalExpense,
     };

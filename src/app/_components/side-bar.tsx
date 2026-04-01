@@ -4,6 +4,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/utils/user-global";
+import { useRouter } from "next/navigation";
 import {
   BarChart3,
   BookOpen,
@@ -86,6 +87,7 @@ function SectionLabel({ children, collapsed }: { children: React.ReactNode; coll
 
 function SidebarInner({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
   const { user, isLoading } = useUser();
+  const router = useRouter();
 
   return (
     <div className="flex h-full flex-col">
@@ -171,7 +173,10 @@ function SidebarInner({ collapsed, onNavigate }: { collapsed?: boolean; onNaviga
               )}
             </div>
             <button
-              onClick={() => authClient.signOut()}
+              onClick={async () => {
+                await authClient.signOut();
+                router.push("/login");
+              }}
               className={cn(
                 "flex w-full items-center gap-3 rounded-[20px] px-3 py-2 text-sm font-medium text-red-400 border border-transparent transition-all hover:border-red-500/30 hover:bg-red-500/10",
                 collapsed && "justify-center px-2",
@@ -236,7 +241,7 @@ export function SSideBar() {
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden md:flex h-screen sticky top-0 flex-col border-r border-[var(--glass-border)] transition-all duration-300 ease-in-out relative",
+          "hidden md:flex h-screen fixed top-0 left-0 z-30 flex-col border-r border-[var(--glass-border)] transition-all duration-300 ease-in-out",
           collapsed ? "w-[72px]" : "w-[240px]",
         )}
         style={{ background: "var(--sidebar-gradient)" }}
@@ -255,6 +260,14 @@ export function SSideBar() {
           )}
         </button>
       </aside>
+
+      {/* Spacer to push content to the right */}
+      <div
+        className={cn(
+          "hidden md:block shrink-0 transition-all duration-300 ease-in-out",
+          collapsed ? "w-[72px]" : "w-[240px]",
+        )}
+      />
     </>
   );
 }

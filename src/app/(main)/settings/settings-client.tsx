@@ -28,12 +28,12 @@ export function SettingsClient({ settings, userId }: { settings: Settings; userI
   return (
     <div className="p-4 sm:p-6 lg:p-10">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-8 max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-white tracking-tight">การตั้งค่า</h1>
         <p className="text-gray-400 text-sm mt-1">จัดการข้อมูลส่วนตัวและปรับแต่งการใช้งานแอปพลิเคชัน</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 max-w-4xl">
+      <div className="grid grid-cols-1 gap-8 max-w-4xl mx-auto">
         {/* Profile Section */}
         <section className="glass-card p-8">
           <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
@@ -102,10 +102,7 @@ export function SettingsClient({ settings, userId }: { settings: Settings; userI
                 <p className="text-white font-medium">สกุลเงินหลัก</p>
                 <p className="text-xs text-gray-400">ตั้งค่าสกุลเงินที่จะแสดงผลในแอป</p>
               </div>
-              <select className="bg-transparent border border-gray-600 rounded-lg p-1 text-sm">
-                <option value="THB">บาท (THB)</option>
-                <option value="USD">ดอลลาร์ (USD)</option>
-              </select>
+              <span className="text-sm text-gray-300 border border-gray-600 rounded-lg px-3 py-1">บาท (THB)</span>
             </div>
           </div>
         </section>

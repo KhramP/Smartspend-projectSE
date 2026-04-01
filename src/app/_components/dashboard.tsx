@@ -260,13 +260,13 @@ export function DashBoard({
               <div key={budget.name}>
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-gray-300">{budget.name}</span>
-                  <span className="text-gray-400">
+                  <span className={budget.used > budget.total ? "text-red-400" : "text-gray-400"}>
                     ฿{budget.used.toLocaleString()} / {budget.total.toLocaleString()}
                   </span>
                 </div>
                 <div className="w-full h-3 bg-gray-800 border border-gray-600 rounded-sm overflow-hidden">
                   <div
-                    className="h-full bg-[var(--accent-gold)] shadow-[0_0_10px_rgba(255,215,0,0.5)]"
+                    className={`h-full ${budget.used > budget.total ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" : "bg-[var(--accent-gold)] shadow-[0_0_10px_rgba(255,215,0,0.5)]"}`}
                     style={{ width: `${Math.min((budget.used / budget.total) * 100, 100)}%` }}
                   ></div>
                 </div>

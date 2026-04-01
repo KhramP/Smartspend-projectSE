@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/lib/constants/categories";
+import { CATEGORY_COLORS, CATEGORY_ICONS, INCOME_CATEGORIES } from "@/lib/constants/categories";
 import "@/app/_components/GlobalLayout.css";
 
 type AnalyseData = {
@@ -17,10 +17,11 @@ const COLORS = ["#9bd104", "#ffd700", "#4CAF50", "#2196F3", "#8b5cf6", "#f43f5e"
 
 export function AnalyseClient({ data }: { data: AnalyseData }) {
   const [trendTab, setTrendTab] = useState("รายรับ-รายจ่าย");
-  const [catTab, setCatTab] = useState("ยอดรวม");
 
-  const sortedCategoryStats = [...data.categoryStats].sort((a, b) => b.amount - a.amount);
-  const totalExpense6m = data.categoryStats.reduce((s, c) => s + c.amount, 0);
+  const incomeNames = new Set(INCOME_CATEGORIES.map((c) => c.name));
+  const expenseOnlyStats = data.categoryStats.filter((c) => !incomeNames.has(c.name));
+  const sortedCategoryStats = [...expenseOnlyStats].sort((a, b) => b.amount - a.amount);
+  const totalExpense6m = expenseOnlyStats.reduce((s, c) => s + c.amount, 0);
   const totalTransactions6m = data.topExpenses.reduce((s, t) => s + t.count, 0);
   const topCategory = sortedCategoryStats[0];
 
@@ -30,7 +31,7 @@ export function AnalyseClient({ data }: { data: AnalyseData }) {
     expense: { label: "รายจ่าย", color: "#ef4444" },
   };
 
-  const pieData = data.categoryStats.map((c, i) => ({
+  const pieData = expenseOnlyStats.map((c, i) => ({
     name: c.name,
     value: c.amount,
     fill: CATEGORY_COLORS[c.name] || COLORS[i % COLORS.length],
@@ -114,17 +115,6 @@ export function AnalyseClient({ data }: { data: AnalyseData }) {
               <h3 className="text-lg font-medium text-white">สัดส่วนหมวดหมู่</h3>
               <p className="text-xs text-gray-400">6 เดือนล่าสุด</p>
             </div>
-            <div className="flex border border-gray-600 rounded-lg overflow-hidden">
-              {["ยอดรวม", "ครั้ง"].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setCatTab(tab)}
-                  className={`px-4 py-1.5 text-xs ${catTab === tab ? "bg-[var(--accent-green)] text-black font-medium" : "text-gray-400 hover:text-white"}`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Donut summary circles */}
@@ -143,10 +133,10 @@ export function AnalyseClient({ data }: { data: AnalyseData }) {
 
           {/* Category progress bars */}
           <div className="space-y-3">
-            {data.categoryStats.length === 0 ? (
+            {expenseOnlyStats.length === 0 ? (
               <p className="text-center text-gray-500">ไม่มีข้อมูล</p>
             ) : (
-              data.categoryStats.map((cat, idx) => (
+              expenseOnlyStats.map((cat, idx) => (
                 <div key={cat.name} className="flex items-center text-sm">
                   <span className="w-16 text-gray-300">{cat.name}</span>
                   <div className="flex-1 mx-4 h-2 bg-gray-700 rounded-full overflow-hidden">
@@ -172,7 +162,7 @@ export function AnalyseClient({ data }: { data: AnalyseData }) {
         {/* Left: Pie Chart (shadcn) */}
         <div className="glass-card p-6 min-h-[300px] flex flex-col">
           <h3 className="text-lg font-medium text-white mb-2">💡 Insight</h3>
-          {data.categoryStats.length > 0 ? (
+          {expenseOnlyStats.length > 0 ? (
             <>
               <p className="text-sm text-gray-400 mb-4">
                 คุณใช้จ่ายกับหมวด <span className="font-bold text-white">{topCategory.name}</span> มากที่สุด คิดเป็น{" "}
@@ -181,7 +171,7 @@ export function AnalyseClient({ data }: { data: AnalyseData }) {
               <div className="flex-1 min-h-[200px]">
                 <ChartContainer
                   config={Object.fromEntries(
-                    data.categoryStats.map((c, i) => [
+                    expenseOnlyStats.map((c, i) => [
                       c.name,
                       { label: c.name, color: CATEGORY_COLORS[c.name] || COLORS[i % COLORS.length] },
                     ]),
