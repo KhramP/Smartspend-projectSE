@@ -26,6 +26,7 @@ export function TransactionClient({
   const [filter, setFilter] = useState<"ทั้งหมด" | "รายจ่าย" | "รายรับ">("ทั้งหมด");
   const [search, setSearch] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [editTx, setEditTx] = useState<Transaction | null>(null);
   const [editForm, setEditForm] = useState({ name: "", amount: "", date: "", category: "", type: "", note: "" });
   const [editError, setEditError] = useState("");
@@ -45,10 +46,11 @@ export function TransactionClient({
     return true;
   });
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("ต้องการลบรายการนี้หรือไม่?")) return;
-    setDeleting(id);
-    await deleteTransaction({ id, userId });
+  const handleDelete = async () => {
+    if (!confirmDeleteId) return;
+    setDeleting(confirmDeleteId);
+    setConfirmDeleteId(null);
+    await deleteTransaction({ id: confirmDeleteId, userId });
     setDeleting(null);
     router.refresh();
   };
@@ -88,8 +90,6 @@ export function TransactionClient({
     setEditTx(null);
     router.refresh();
   };
-
-  const editCategories = editForm.type === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 
   return (
     <div className="p-4 sm:p-6 lg:p-10">
@@ -193,7 +193,7 @@ export function TransactionClient({
                         </svg>
                       </button>
                       <button
-                        onClick={() => handleDelete(tx.id)}
+                        onClick={() => setConfirmDeleteId(tx.id)}
                         disabled={deleting === tx.id}
                         className="text-gray-500 hover:text-red-400 transition-colors cursor-pointer disabled:opacity-30"
                         title="ลบ"
@@ -227,101 +227,198 @@ export function TransactionClient({
 
       {/* Edit Modal */}
       {editTx && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-[95%] max-w-[500px] rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8 backdrop-blur-xl">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-white">แก้ไขรายการ</h3>
-              <button
-                onClick={() => setEditTx(null)}
-                className="text-gray-400 hover:text-white cursor-pointer text-2xl"
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative max-h-[90vh] w-[95%] sm:w-[90%] max-w-[800px] overflow-y-auto rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-8 backdrop-blur-xl animate-in slide-in-from-bottom-3 duration-250">
+            {/* Header */}
+            <div className="mb-6 flex items-center gap-3 text-2xl font-semibold text-white">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                &times;
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+              <span>แก้ไขรายการ</span>
+              <button
+                type="button"
+                className="ml-auto border-none bg-transparent p-1 text-xl text-gray-500 transition-colors hover:text-white cursor-pointer rounded"
+                onClick={() => setEditTx(null)}
+              >
+                ✕
               </button>
             </div>
 
-            {editError && <p className="text-red-400 text-sm mb-4">{editError}</p>}
+            {editError && (
+              <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                {editError}
+              </div>
+            )}
 
-            <div className="space-y-4">
-              {/* Type toggle */}
-              <div className="flex gap-2">
-                {(["expense", "income"] as const).map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => {
-                      setEditForm((p) => ({ ...p, type: t, category: "" }));
-                    }}
-                    className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-                      editForm.type === t
-                        ? t === "expense"
-                          ? "bg-red-500/20 text-red-400 border border-red-500/40"
-                          : "bg-green-500/20 text-green-400 border border-green-500/40"
-                        : "bg-white/5 text-gray-400 border border-white/10"
-                    }`}
-                  >
-                    {t === "expense" ? "รายจ่าย" : "รายรับ"}
-                  </button>
-                ))}
-              </div>
-
-              <div className="form-group">
-                <label>ชื่อรายการ</label>
-                <input
-                  className="form-input"
-                  value={editForm.name}
-                  onChange={(e) => setEditForm((p) => ({ ...p, name: e.target.value }))}
-                />
-              </div>
-              <div className="form-group">
-                <label>จำนวนเงิน</label>
-                <input
-                  className="form-input"
-                  type="number"
-                  value={editForm.amount}
-                  onChange={(e) => setEditForm((p) => ({ ...p, amount: e.target.value }))}
-                />
-              </div>
-              <div className="form-group">
-                <label>วันที่</label>
-                <input
-                  className="form-input"
-                  type="date"
-                  value={editForm.date}
-                  onChange={(e) => setEditForm((p) => ({ ...p, date: e.target.value }))}
-                />
-              </div>
-              <div className="form-group">
-                <label>หมวดหมู่</label>
-                <select
-                  className="form-input"
-                  value={editForm.category}
-                  onChange={(e) => setEditForm((p) => ({ ...p, category: e.target.value }))}
-                >
-                  <option value="">เลือกหมวดหมู่</option>
-                  {editCategories.map((cat) => (
-                    <option key={cat.name} value={cat.name}>
-                      {cat.icon} {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>หมายเหตุ</label>
-                <input
-                  className="form-input"
-                  value={editForm.note}
-                  onChange={(e) => setEditForm((p) => ({ ...p, note: e.target.value }))}
-                  placeholder="(ไม่บังคับ)"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <button onClick={handleEditSave} disabled={saving} className="btn-save flex-1 disabled:opacity-50">
-                {saving ? "กำลังบันทึก..." : "บันทึก"}
+            {/* Toggle รายจ่าย / รายรับ */}
+            <div className="mb-6 flex rounded-lg border border-white/10 p-1">
+              <button
+                type="button"
+                className={`flex-1 cursor-pointer rounded-md border-none px-3 py-3 text-base font-medium transition-all duration-300 ${editForm.type === "expense" ? "bg-white/10 text-white" : "bg-transparent text-gray-500"}`}
+                onClick={() => setEditForm((p) => ({ ...p, type: "expense", category: "" }))}
+              >
+                รายจ่าย
               </button>
               <button
+                type="button"
+                className={`flex-1 cursor-pointer rounded-md border-none px-3 py-3 text-base font-medium transition-all duration-300 ${editForm.type === "income" ? "bg-white/10 text-white" : "bg-transparent text-gray-500"}`}
+                onClick={() => setEditForm((p) => ({ ...p, type: "income", category: "" }))}
+              >
+                รายรับ
+              </button>
+            </div>
+
+            {/* Amount */}
+            <div className="mb-5">
+              <label className="mb-2 block text-sm text-gray-500">จำนวนเงิน (฿)</label>
+              <input
+                type="number"
+                step="0.01"
+                className="w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-[15px] text-white transition-colors duration-300 focus:border-[#9bd104] focus:outline-none [&::-webkit-calendar-picker-indicator]:invert"
+                placeholder="0.00"
+                value={editForm.amount}
+                onChange={(e) => setEditForm((p) => ({ ...p, amount: e.target.value }))}
+              />
+            </div>
+
+            {/* Name */}
+            <div className="mb-5">
+              <label className="mb-2 block text-sm text-gray-500">ชื่อรายการ</label>
+              <input
+                type="text"
+                className="w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-[15px] text-white transition-colors duration-300 focus:border-[#9bd104] focus:outline-none"
+                placeholder="ระบุชื่อรายการ"
+                value={editForm.name}
+                onChange={(e) => setEditForm((p) => ({ ...p, name: e.target.value }))}
+              />
+            </div>
+
+            {/* Categories Grid */}
+            <div className="mb-5">
+              <label className="mb-2 block text-sm text-gray-500">หมวดหมู่</label>
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                <div className="grid flex-3 grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
+                  {EXPENSE_CATEGORIES.map((cat) => (
+                    <div
+                      key={cat.id}
+                      className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border px-2 py-3 text-[13px] transition-all duration-200 ${
+                        editForm.category === cat.name
+                          ? "border-[#9bd104] bg-[#9bd104]/10 text-white"
+                          : "border-white/10 bg-black/20 text-gray-500 hover:border-[#9bd104] hover:bg-[#9bd104]/10 hover:text-white"
+                      }`}
+                      onClick={() => setEditForm((p) => ({ ...p, category: cat.name, type: "expense" }))}
+                    >
+                      <span className="text-xl">{cat.icon}</span>
+                      <span>{cat.name}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-1 flex-row sm:flex-col justify-start gap-2 sm:gap-3 border-t sm:border-t-0 sm:border-l border-white/10 pt-4 sm:pt-0 sm:pl-6">
+                  {INCOME_CATEGORIES.map((cat) => (
+                    <div
+                      key={cat.id}
+                      className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border px-2 py-3 text-[13px] transition-all duration-200 ${
+                        editForm.category === cat.name
+                          ? "border-[#9bd104] bg-[#9bd104]/10 text-white"
+                          : "border-white/10 bg-black/20 text-gray-500 hover:border-[#9bd104] hover:bg-[#9bd104]/10 hover:text-white"
+                      }`}
+                      onClick={() => setEditForm((p) => ({ ...p, category: cat.name, type: "income" }))}
+                    >
+                      <span className="text-xl">{cat.icon}</span>
+                      <span>{cat.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Date */}
+            <div className="mb-5">
+              <label className="mb-2 block text-sm text-gray-500">วันที่</label>
+              <input
+                type="date"
+                className="w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-[15px] text-white transition-colors duration-300 focus:border-[#9bd104] focus:outline-none [&::-webkit-calendar-picker-indicator]:invert"
+                value={editForm.date}
+                onChange={(e) => setEditForm((p) => ({ ...p, date: e.target.value }))}
+              />
+            </div>
+
+            {/* Note */}
+            <div className="mb-5">
+              <label className="mb-2 block text-sm text-gray-500">Note</label>
+              <input
+                type="text"
+                className="w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-[15px] text-white transition-colors duration-300 focus:border-[#9bd104] focus:outline-none"
+                placeholder="บันทึกเพิ่มเติม..."
+                value={editForm.note}
+                onChange={(e) => setEditForm((p) => ({ ...p, note: e.target.value }))}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-8 flex gap-4">
+              <button
+                type="button"
+                onClick={handleEditSave}
+                disabled={saving}
+                className="flex-2 cursor-pointer rounded-lg border-none bg-[#9bd104] px-4 py-4 text-base font-semibold text-black transition-opacity duration-300 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {saving ? "กำลังบันทึก..." : "บันทึกรายการ"}
+              </button>
+              <button
+                type="button"
+                className="flex-1 cursor-pointer rounded-lg border border-gray-600 bg-transparent px-4 py-4 text-base text-white transition-all duration-300 hover:border-white hover:bg-white/5"
                 onClick={() => setEditTx(null)}
-                className="flex-1 py-3 rounded-xl border border-gray-600 text-gray-400 hover:border-white hover:text-white transition-all cursor-pointer"
+              >
+                ยกเลิก
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirm Modal */}
+      {confirmDeleteId && (
+        <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-[90%] max-w-[400px] rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8 backdrop-blur-xl animate-in slide-in-from-bottom-3 duration-250 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-500/10 border border-red-500/30">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#ef4444"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">ยืนยันการลบ</h3>
+            <p className="text-sm text-gray-400 mb-6">ต้องการลบรายการนี้หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleDelete}
+                className="flex-1 cursor-pointer rounded-lg border-none bg-red-500 px-4 py-3 text-base font-semibold text-white transition-opacity duration-300 hover:opacity-90"
+              >
+                ลบรายการ
+              </button>
+              <button
+                onClick={() => setConfirmDeleteId(null)}
+                className="flex-1 cursor-pointer rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-base text-white transition-all duration-300 hover:border-white hover:bg-white/5"
               >
                 ยกเลิก
               </button>
