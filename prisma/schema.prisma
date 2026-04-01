@@ -51,6 +51,7 @@ model User {
   accounts      Account[]
 
   transactions Transaction[]
+  budgets      Budget[]
 
   @@unique([email])
   @@map("user")
@@ -90,6 +91,20 @@ model Account {
 
   @@index([userId])
   @@map("account")
+}
+
+model Budget {
+  id        String   @id @default(uuid())
+  category  String
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
+  @@map("budget")
 }
 
 model Verification {

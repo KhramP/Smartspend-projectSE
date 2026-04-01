@@ -166,11 +166,11 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
                   <div
                     key={cat.id}
                     className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border px-2 py-3 text-[13px] transition-all duration-200 ${
-                      selectedCategory === cat.id
+                      selectedCategory === cat.name
                         ? "border-[#9bd104] bg-[#9bd104]/10 text-white"
                         : "border-white/10 bg-black/20 text-gray-500 hover:border-[#9bd104] hover:bg-[#9bd104]/10 hover:text-white"
                     }`}
-                    onClick={() => setSelectedCategory(cat.id)}
+                    onClick={() => setSelectedCategory(cat.name)}
                   >
                     <span className="text-xl">{cat.icon}</span>
                     <span>{cat.name}</span>
@@ -183,11 +183,11 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
                   <div
                     key={cat.id}
                     className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border px-2 py-3 text-[13px] transition-all duration-200 ${
-                      selectedCategory === cat.id
+                      selectedCategory === cat.name
                         ? "border-[#9bd104] bg-[#9bd104]/10 text-white"
                         : "border-white/10 bg-black/20 text-gray-500 hover:border-[#9bd104] hover:bg-[#9bd104]/10 hover:text-white"
                     }`}
-                    onClick={() => setSelectedCategory(cat.id)}
+                    onClick={() => setSelectedCategory(cat.name)}
                   >
                     <span className="text-xl">{cat.icon}</span>
                     <span>{cat.name}</span>

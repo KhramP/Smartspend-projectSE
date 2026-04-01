@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { UI_COLORS, CATEGORY_COLORS_ARRAY, cardStyle as baseCardStyle, pageContainerStyle } from "@/lib/constants";
-import { PageHeader } from "@/app/_components/page-header";
-
-const { BG: BG_COLOR, BORDER: BORDER_COLOR, TEXT_MAIN, TEXT_SUB } = UI_COLORS;
-const CATEGORY_COLORS = CATEGORY_COLORS_ARRAY;
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, PieChart, Pie } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/lib/constants/categories";
+import "@/app/_components/GlobalLayout.css";
 
 type AnalyseData = {
   monthlyData: { month: string; income: number; expense: number }[];
@@ -14,98 +13,115 @@ type AnalyseData = {
   topExpenses: { rank: number; name: string; category: string; count: number; amount: number }[];
 };
 
+const COLORS = ["#9bd104", "#ffd700", "#4CAF50", "#2196F3", "#8b5cf6", "#f43f5e", "#f59e0b", "#71717a"];
+
 export function AnalyseClient({ data }: { data: AnalyseData }) {
   const [trendTab, setTrendTab] = useState("รายรับ-รายจ่าย");
+  const [catTab, setCatTab] = useState("ยอดรวม");
   const [topTab, setTopTab] = useState("ยอดรวม");
-
-  const cardStyle = {
-    ...baseCardStyle,
-    borderRadius: "20px",
-  };
-
-  const statCardsDisplay = [
-    {
-      label: "ค่าใช้จ่ายเฉลี่ย/เดือน",
-      value: `฿${data.statCards.avgMonthlyExpense.toLocaleString()}`,
-      color: "#f43f5e",
-      icon: "📉",
-    },
-    {
-      label: "ออมเงินเฉลี่ย/เดือน",
-      value: `฿${data.statCards.avgMonthlySaving.toLocaleString()}`,
-      color: "#10b981",
-      icon: "🏦",
-    },
-    { label: "เดือนที่ใช้จ่ายสูงสุด", value: data.statCards.highestMonth, color: TEXT_MAIN, icon: "📅" },
-    { label: "อัตราออมเงิน", value: `${data.statCards.savingRate}%`, color: "#f59e0b", icon: "💹" },
-  ];
 
   const topExpensesSorted =
     topTab === "ครั้ง" ? [...data.topExpenses].sort((a, b) => b.count - a.count) : data.topExpenses;
 
-  return (
-    <div style={pageContainerStyle}>
-      <PageHeader title="วิเคราะห์เชิงลึก" subtitle="เจาะลึกพฤติกรรมการใช้เงินของคุณอย่างละเอียด" />
+  const totalExpense6m = data.categoryStats.reduce((s, c) => s + c.amount, 0);
+  const totalTransactions6m = data.topExpenses.reduce((s, t) => s + t.count, 0);
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px", marginBottom: "32px" }}>
-        {statCardsDisplay.map((s) => (
-          <div key={s.label} style={cardStyle}>
-            <div
-              style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}
-            >
-              <div
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  background: BG_COLOR,
-                  borderRadius: "12px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "20px",
-                }}
-              >
-                {s.icon}
-              </div>
-              <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: s.color }} />
-            </div>
-            <p
-              style={{
-                color: TEXT_SUB,
-                fontSize: "12px",
-                fontWeight: 600,
-                marginBottom: "4px",
-                textTransform: "uppercase",
-                letterSpacing: "0.5px",
-              }}
-            >
-              {s.label}
-            </p>
-            <p style={{ color: TEXT_MAIN, fontSize: "24px", fontWeight: 800 }}>{s.value}</p>
-          </div>
-        ))}
+  // Chart configs for shadcn
+  const trendChartConfig = {
+    income: { label: "รายรับ", color: "#10b981" },
+    expense: { label: "รายจ่าย", color: "#ef4444" },
+  };
+
+  const pieData = data.categoryStats.map((c, i) => ({
+    name: c.name,
+    value: c.amount,
+    fill: CATEGORY_COLORS[c.name] || COLORS[i % COLORS.length],
+  }));
+
+  return (
+    <div className="p-4 sm:p-6 lg:p-10">
+      {/* Row 1: Stat Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-6">
+        <div className="glass-card text-center py-6 lg:py-8 px-4">
+          <p className="stat-label">ค่าใช้จ่ายเฉลี่ย/เดือน</p>
+          <h3 className="text-xl lg:text-3xl font-semibold text-red-400">
+            ฿{data.statCards.avgMonthlyExpense.toLocaleString()}
+          </h3>
+        </div>
+        <div className="glass-card text-center py-6 lg:py-8 px-4">
+          <p className="stat-label">ออมเงินเฉลี่ย/เดือน</p>
+          <h3 className="text-xl lg:text-3xl font-semibold text-green-400">
+            ฿{data.statCards.avgMonthlySaving.toLocaleString()}
+          </h3>
+        </div>
+        <div className="glass-card text-center py-6 lg:py-8 px-4">
+          <p className="stat-label">เดือนที่ใช้จ่ายสูงสุด</p>
+          <h3 className="text-xl lg:text-3xl font-semibold text-white">{data.statCards.highestMonth}</h3>
+        </div>
+        <div className="glass-card text-center py-6 lg:py-8 px-4">
+          <p className="stat-label">อัตราออมเงิน</p>
+          <h3 className="text-xl lg:text-3xl font-semibold text-[var(--accent-gold)]">{data.statCards.savingRate}%</h3>
+        </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "24px", marginBottom: "24px" }}>
-        <div style={cardStyle}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
-            <h3 style={{ fontSize: "18px", fontWeight: 700 }}>แนวโน้มรายรับ-รายจ่าย</h3>
-            <div style={{ display: "flex", background: BG_COLOR, padding: "4px", borderRadius: "12px" }}>
+      {/* Row 2: Trend Chart + Category Proportions */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Left: Trend Chart (shadcn) */}
+        <div className="glass-card p-6 flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-medium text-white">แนวโน้มรายรับ-รายจ่าย</h3>
+            <div className="flex border border-gray-600 rounded-lg overflow-hidden">
               {["รายรับ-รายจ่าย", "รายจ่าย", "รายรับ"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setTrendTab(tab)}
-                  style={{
-                    padding: "6px 16px",
-                    fontSize: "12px",
-                    border: "none",
-                    borderRadius: "8px",
-                    background: trendTab === tab ? "#2563be" : "transparent",
-                    color: trendTab === tab ? "#fff" : "#000",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    boxShadow: trendTab === tab ? "0 2px 4px rgb(0 0 0 / 0.05)" : "none",
-                  }}
+                  className={`px-4 py-1.5 text-xs ${trendTab === tab ? "bg-[var(--accent-green)] text-black font-medium" : "text-gray-400 hover:text-white"}`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex-1 min-h-[250px]">
+            {data.monthlyData.length > 0 ? (
+              <ChartContainer config={trendChartConfig} className="h-[250px] w-full">
+                <BarChart data={data.monthlyData} barGap={4}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
+                  <XAxis dataKey="month" tick={{ fill: "#9ca3af", fontSize: 12 }} axisLine={false} tickLine={false} />
+                  <YAxis
+                    tick={{ fill: "#9ca3af", fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                    tickFormatter={(v) => `฿${(v / 1000).toFixed(0)}k`}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  {(trendTab === "รายรับ-รายจ่าย" || trendTab === "รายรับ") && (
+                    <Bar dataKey="income" fill="#10b981" radius={[4, 4, 0, 0]} />
+                  )}
+                  {(trendTab === "รายรับ-รายจ่าย" || trendTab === "รายจ่าย") && (
+                    <Bar dataKey="expense" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                  )}
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500">ไม่มีข้อมูล</div>
+            )}
+          </div>
+        </div>
+
+        {/* Right: Category Proportions */}
+        <div className="glass-card p-6 flex flex-col">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h3 className="text-lg font-medium text-white">สัดส่วนหมวดหมู่</h3>
+              <p className="text-xs text-gray-400">6 เดือนล่าสุด</p>
+            </div>
+            <div className="flex border border-gray-600 rounded-lg overflow-hidden">
+              {["ยอดรวม", "ครั้ง"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setCatTab(tab)}
+                  className={`px-4 py-1.5 text-xs ${catTab === tab ? "bg-[var(--accent-green)] text-black font-medium" : "text-gray-400 hover:text-white"}`}
                 >
                   {tab}
                 </button>
@@ -113,82 +129,39 @@ export function AnalyseClient({ data }: { data: AnalyseData }) {
             </div>
           </div>
 
-          <div style={{ height: "220px" }}>
-            {data.monthlyData.length > 0 ? (
-              <svg viewBox="0 0 400 140" style={{ width: "100%", height: "100%" }}>
-                {[0, 1, 2, 3].map((i) => (
-                  <line
-                    key={i}
-                    x1="0"
-                    y1={i * 35 + 10}
-                    x2="400"
-                    y2={i * 35 + 10}
-                    stroke={BORDER_COLOR}
-                    strokeWidth="1"
-                  />
-                ))}
-                {data.monthlyData.map((m, i) => {
-                  const x = (i / Math.max(data.monthlyData.length - 1, 1)) * 370 + 15;
-                  const maxVal = Math.max(...data.monthlyData.flatMap((d) => [d.income, d.expense]), 1);
-                  const expenseY = 120 - (m.expense / maxVal) * 100;
-                  const incomeY = 120 - (m.income / maxVal) * 100;
-                  return (
-                    <g key={i}>
-                      {(trendTab === "รายรับ-รายจ่าย" || trendTab === "รายจ่าย") && (
-                        <circle cx={x} cy={expenseY} r="5" fill="#ef4444" />
-                      )}
-                      {(trendTab === "รายรับ-รายจ่าย" || trendTab === "รายรับ") && (
-                        <circle cx={x} cy={incomeY} r="5" fill="#10b981" />
-                      )}
-                      <text x={x} y="135" textAnchor="middle" fontSize="10" fill={TEXT_SUB}>
-                        {m.month}
-                      </text>
-                    </g>
-                  );
-                })}
-              </svg>
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
-                  color: TEXT_SUB,
-                }}
-              >
-                ไม่มีข้อมูล
-              </div>
-            )}
+          {/* Donut summary circles */}
+          <div className="flex justify-around mb-8 mt-2">
+            <div className="flex flex-col items-center justify-center w-32 h-32 rounded-full border-4 border-gray-600 relative">
+              <span className="text-xl font-semibold text-white">฿{totalExpense6m.toLocaleString()}</span>
+              <span className="text-xs text-gray-400">รายจ่ายรวม</span>
+              <div className="absolute inset-[-4px] rounded-full border-4 border-transparent border-t-[var(--accent-green)] border-r-[var(--accent-green)] transform rotate-45"></div>
+            </div>
+            <div className="flex flex-col items-center justify-center w-32 h-32 rounded-full border-4 border-gray-600 relative">
+              <span className="text-xl font-semibold text-white">{totalTransactions6m} ครั้ง</span>
+              <span className="text-xs text-gray-400">ธุรกรรมรวม</span>
+              <div className="absolute inset-[-4px] rounded-full border-4 border-transparent border-b-[var(--accent-gold)] border-l-[var(--accent-gold)] transform -rotate-12"></div>
+            </div>
           </div>
-        </div>
 
-        <div style={cardStyle}>
-          <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "4px" }}>สัดส่วนหมวดหมู่</h3>
-          <p style={{ color: TEXT_SUB, fontSize: "13px", marginBottom: "28px" }}>ข้อมูลย้อนหลัง 6 เดือน</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+          {/* Category progress bars */}
+          <div className="space-y-3">
             {data.categoryStats.length === 0 ? (
-              <p style={{ color: TEXT_SUB, textAlign: "center" }}>ไม่มีข้อมูล</p>
+              <p className="text-center text-gray-500">ไม่มีข้อมูล</p>
             ) : (
-              data.categoryStats.map((cat, i) => (
-                <div key={cat.name} style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                  <span style={{ fontSize: "14px", fontWeight: 600, width: "70px" }}>{cat.name}</span>
-                  <div
-                    style={{ flex: 1, height: "10px", background: BG_COLOR, borderRadius: "10px", overflow: "hidden" }}
-                  >
+              data.categoryStats.map((cat, idx) => (
+                <div key={cat.name} className="flex items-center text-sm">
+                  <span className="w-16 text-gray-300">{cat.name}</span>
+                  <div className="flex-1 mx-4 h-2 bg-gray-700 rounded-full overflow-hidden">
                     <div
+                      className="h-full rounded-full transition-all duration-500"
                       style={{
                         width: `${cat.percent}%`,
-                        height: "100%",
-                        background: CATEGORY_COLORS[i % CATEGORY_COLORS.length],
-                        borderRadius: "10px",
+                        backgroundColor: CATEGORY_COLORS[cat.name] || COLORS[idx % COLORS.length],
                       }}
                     />
                   </div>
-                  <div style={{ textAlign: "right", minWidth: "80px" }}>
-                    <span style={{ fontSize: "14px", fontWeight: 700 }}>{cat.percent}%</span>
-                    <p style={{ color: TEXT_SUB, fontSize: "11px" }}>฿{cat.amount.toLocaleString()}</p>
-                  </div>
+                  <span className="w-12 text-right text-gray-400">{cat.percent}%</span>
+                  <span className="w-20 text-right font-medium text-white">฿{cat.amount.toLocaleString()}</span>
                 </div>
               ))
             )}
@@ -196,75 +169,91 @@ export function AnalyseClient({ data }: { data: AnalyseData }) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "24px" }}>
-        <div style={{ ...cardStyle, background: "#fff", border: "none" }}>
-          <div style={{ fontSize: "40px", marginBottom: "16px" }}>💡</div>
-          <h3 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "12px" }}>Insight รายสัปดาห์</h3>
-          <p style={{ fontSize: "15px", lineHeight: "1.6", fontWeight: 500 }}>
-            {data.categoryStats.length > 0 ? (
-              <>
-                คุณใช้จ่ายกับหมวด <span style={{ fontWeight: 800 }}>{data.categoryStats[0].name}</span> มากที่สุด
+      {/* Row 3: Pie Chart + Top Expenses */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left: Pie Chart (shadcn) */}
+        <div className="glass-card p-6 min-h-[300px] flex flex-col">
+          <h3 className="text-lg font-medium text-white mb-2">💡 Insight</h3>
+          {data.categoryStats.length > 0 ? (
+            <>
+              <p className="text-sm text-gray-400 mb-4">
+                คุณใช้จ่ายกับหมวด <span className="font-bold text-white">{data.categoryStats[0].name}</span> มากที่สุด
                 คิดเป็น {data.categoryStats[0].percent}% ของค่าใช้จ่ายทั้งหมด
-              </>
-            ) : (
-              "เริ่มเพิ่มรายการเพื่อดูข้อมูลวิเคราะห์ของคุณ"
-            )}
-          </p>
+              </p>
+              <div className="flex-1 min-h-[200px]">
+                <ChartContainer
+                  config={Object.fromEntries(
+                    data.categoryStats.map((c, i) => [
+                      c.name,
+                      { label: c.name, color: CATEGORY_COLORS[c.name] || COLORS[i % COLORS.length] },
+                    ]),
+                  )}
+                  className="h-[200px] w-full"
+                >
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={80}
+                      paddingAngle={3}
+                      dataKey="value"
+                      nameKey="name"
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                  </PieChart>
+                </ChartContainer>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center text-gray-500">
+              เริ่มเพิ่มรายการเพื่อดูข้อมูลวิเคราะห์ของคุณ
+            </div>
+          )}
         </div>
 
-        <div style={cardStyle}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-            <h3 style={{ fontSize: "18px", fontWeight: 700 }}>Top รายจ่ายสูงสุด</h3>
-            <div style={{ display: "flex", gap: "8px" }}>
+        {/* Right: Top Expenses */}
+        <div className="glass-card p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-medium text-white">Top รายจ่ายสูงสุด</h3>
+            <div className="flex border border-gray-600 rounded-lg overflow-hidden">
               {["ยอดรวม", "ครั้ง"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setTopTab(tab)}
-                  style={{
-                    padding: "6px 14px",
-                    fontSize: "12px",
-                    borderRadius: "8px",
-                    border: "1px solid " + BORDER_COLOR,
-                    background: topTab === tab ? "#2563eb" : "transparent",
-                    color: topTab === tab ? "#fff" : TEXT_SUB,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
+                  className={`px-4 py-1.5 text-xs ${topTab === tab ? "bg-[var(--accent-green)] text-black font-medium" : "text-gray-400 hover:text-white"}`}
                 >
                   {tab}
                 </button>
               ))}
             </div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+
+          <div className="space-y-4">
             {topExpensesSorted.length === 0 ? (
-              <p style={{ color: TEXT_SUB, textAlign: "center", padding: "20px 0" }}>ไม่มีข้อมูล</p>
+              <p className="text-center text-gray-500 py-5">ไม่มีข้อมูล</p>
             ) : (
               topExpensesSorted.map((item) => (
                 <div
                   key={item.rank}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "16px",
-                    background: BG_COLOR,
-                    borderRadius: "16px",
-                  }}
+                  className="flex items-center justify-between p-4 bg-black/20 border border-gray-700 rounded-xl hover:border-gray-500 transition-colors"
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                    <div style={{ fontSize: "14px", fontWeight: 800, color: TEXT_SUB, width: "15px" }}>{item.rank}</div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-gray-500 font-bold w-4">{item.rank}</div>
+                    <div className="text-2xl">{CATEGORY_ICONS[item.category] || "📦"}</div>
                     <div>
-                      <p style={{ fontSize: "15px", fontWeight: 700 }}>{item.name}</p>
-                      <p style={{ color: TEXT_SUB, fontSize: "12px" }}>
-                        {item.category} • {item.count} ครั้ง
-                      </p>
+                      <div className="font-medium text-white">{item.name}</div>
+                      <div className="text-xs text-gray-400">{item.category}</div>
                     </div>
                   </div>
-                  <div style={{ textAlign: "right" }}>
-                    <p style={{ fontSize: "18px", fontWeight: 800, color: item.rank === 1 ? "#e11d48" : TEXT_MAIN }}>
-                      ฿{item.amount.toLocaleString()}
-                    </p>
+                  <div className="text-right">
+                    <div className="text-sm text-gray-300">{item.count} ครั้ง</div>
+                    <div className="font-semibold text-[var(--accent-gold)]">฿{item.amount.toLocaleString()}</div>
                   </div>
                 </div>
               ))

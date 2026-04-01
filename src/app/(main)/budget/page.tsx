@@ -8,5 +8,5 @@ export default async function BudgetPage() {
   const user = session?.user;
   const data = await getBudgetPageData({ userId: user!.id });
 
-  return <BudgetClient data={data} />;
+  return <BudgetClient data={data} userId={user!.id} />;
 }

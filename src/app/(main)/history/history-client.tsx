@@ -3,11 +3,8 @@
 import { useState } from "react";
 import { Transaction } from "@/generated/prisma/client";
 import { getHistoryPageData } from "@/app/actions/transaction";
-import { UI_COLORS, cardStyle as baseCardStyle, pageContainerStyle } from "@/lib/constants";
-import { PageHeader } from "@/app/_components/page-header";
 import { TransactionList } from "@/app/_components/transaction-list";
-
-const { BG: BG_COLOR, BORDER: BORDER_COLOR, TEXT_MAIN, TEXT_SUB, THEME: THEME_COLOR } = UI_COLORS;
+import "@/app/_components/GlobalLayout.css";
 
 export function HistoryClient({ userId }: { userId: string }) {
   const months = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
@@ -19,11 +16,6 @@ export function HistoryClient({ userId }: { userId: string }) {
   const toggle = (y: number, m: string) => {
     const k = `${y}-${m}`;
     setSelected((p) => ({ ...p, [k]: !p[k] }));
-  };
-
-  const cardStyle = {
-    ...baseCardStyle,
-    padding: "40px",
   };
 
   const selectedCount = Object.values(selected).filter(Boolean).length;
@@ -44,18 +36,23 @@ export function HistoryClient({ userId }: { userId: string }) {
   };
 
   return (
-    <div style={pageContainerStyle}>
-      <PageHeader title="ประวัติ" subtitle="เลือกช่วงเวลาที่ต้องการตรวจสอบรายการย้อนหลัง" />
+    <div className="p-4 sm:p-6 lg:p-10 space-y-6 lg:space-y-8">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-white mb-2">ประวัติ</h1>
+        <p className="text-gray-400">เลือกช่วงเวลาที่ต้องการตรวจสอบรายการย้อนหลัง</p>
+      </div>
 
-      <div style={cardStyle}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
+      {/* Month Selection Card */}
+      <div className="glass-card p-6 sm:p-8 lg:p-10 flex flex-col">
+        <h2 className="text-xl text-gray-400 mb-8">เลือกเดือนที่คุณต้องการ</h2>
+
+        <div className="flex-1 space-y-12">
           {years.map((year) => (
             <div key={year}>
-              <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "24px" }}>
-                <h3 style={{ fontSize: "40px", fontWeight: 900, lineHeight: 1, color: TEXT_MAIN }}>{year}</h3>
-                <div style={{ height: "2px", flex: 1, background: BG_COLOR, borderRadius: "2px" }} />
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "16px" }}>
+              <h3 className="text-4xl font-light text-gray-500 mb-6">{year}</h3>
+
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 lg:gap-6">
                 {months.map((m) => {
                   const key = `${year}-${m}`;
                   const isOn = !!selected[key];
@@ -63,35 +60,22 @@ export function HistoryClient({ userId }: { userId: string }) {
                     <div
                       key={m}
                       onClick={() => toggle(year, m)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                        padding: "12px",
-                        borderRadius: "16px",
-                        background: isOn ? `${THEME_COLOR}20` : "transparent",
-                        border: `1px solid ${isOn ? THEME_COLOR : BORDER_COLOR}`,
-                        cursor: "pointer",
-                      }}
+                      className="flex items-center gap-3 cursor-pointer group"
                     >
                       <div
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                          border: `2px solid ${isOn ? "#000" : BORDER_COLOR}`,
-                          background: isOn ? "#000" : "transparent",
-                          borderRadius: "8px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                        }}
+                        className={`w-8 h-8 rounded border-2 flex items-center justify-center transition-all ${
+                          isOn
+                            ? "bg-[var(--accent-green)] border-[var(--accent-green)]"
+                            : "border-gray-600 group-hover:border-gray-400"
+                        }`}
                       >
-                        {isOn && <span style={{ color: THEME_COLOR, fontSize: "12px", fontWeight: 900 }}>✓</span>}
+                        {isOn && (
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3">
+                            <path d="M20 6L9 17L4 12" />
+                          </svg>
+                        )}
                       </div>
-                      <span style={{ color: isOn ? "#000" : TEXT_SUB, fontSize: "15px", fontWeight: isOn ? 700 : 500 }}>
-                        {m}
-                      </span>
+                      <span className={`text-xl ${isOn ? "text-white" : "text-gray-400"}`}>{m}</span>
                     </div>
                   );
                 })}
@@ -100,29 +84,16 @@ export function HistoryClient({ userId }: { userId: string }) {
           ))}
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            gap: "16px",
-            marginTop: "48px",
-            paddingTop: "32px",
-            borderTop: `1px solid ${BORDER_COLOR}`,
-          }}
-        >
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 mt-8 lg:mt-12 pt-6 lg:pt-8 border-t border-white/10">
           <button
             onClick={handleSearch}
             disabled={selectedCount === 0 || loading}
-            style={{
-              flex: 2,
-              padding: "18px",
-              background: selectedCount > 0 ? "#2563eb" : BORDER_COLOR,
-              color: selectedCount > 0 ? "#fff" : TEXT_SUB,
-              border: "none",
-              borderRadius: "16px",
-              fontWeight: 800,
-              fontSize: "16px",
-              cursor: selectedCount > 0 ? "pointer" : "not-allowed",
-            }}
+            className={`flex-[2] py-4 lg:py-5 rounded-full text-base lg:text-lg font-semibold transition-all ${
+              selectedCount > 0 && !loading
+                ? "bg-[var(--accent-green)] text-black hover:brightness-110 cursor-pointer"
+                : "bg-white/10 text-gray-500 cursor-not-allowed"
+            }`}
           >
             {loading ? "กำลังโหลด..." : `ดูประวัติการใช้จ่าย (${selectedCount} เดือน)`}
           </button>
@@ -131,28 +102,22 @@ export function HistoryClient({ userId }: { userId: string }) {
               setSelected({});
               setTransactions([]);
             }}
-            style={{
-              flex: 1,
-              padding: "18px",
-              background: "transparent",
-              border: `1px solid ${BORDER_COLOR}`,
-              borderRadius: "16px",
-              color: TEXT_SUB,
-              fontWeight: 600,
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
+            className="flex-1 py-4 lg:py-5 rounded-full text-base lg:text-lg font-medium border border-gray-600 text-gray-400 hover:border-white hover:text-white transition-all cursor-pointer bg-transparent"
           >
             ล้างทั้งหมด
           </button>
         </div>
       </div>
 
+      {/* Results */}
       {transactions.length > 0 && (
-        <div style={{ ...cardStyle, marginTop: "24px" }}>
-          <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "24px" }}>
-            ผลลัพธ์ ({transactions.length} รายการ)
-          </h3>
+        <div className="glass-card p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold text-white">ผลลัพธ์</h3>
+            <span className="text-sm text-gray-400 bg-white/10 px-3 py-1 rounded-full">
+              {transactions.length} รายการ
+            </span>
+          </div>
           <TransactionList transactions={transactions} showYear />
         </div>
       )}

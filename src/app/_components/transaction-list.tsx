@@ -2,44 +2,22 @@
 // Eliminates duplicate transaction rendering across pages
 
 import { Transaction } from "@/generated/prisma/client";
-import { UI_COLORS } from "@/lib/constants";
 
 export function TransactionRow({ tx }: { tx: Transaction }) {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "100px 1fr 140px 120px",
-        padding: "16px 0",
-        borderBottom: `1px solid ${UI_COLORS.BG}`,
-        alignItems: "center",
-      }}
-    >
-      <span style={{ color: UI_COLORS.TEXT_SUB, fontSize: "13px" }}>
+    <div className="grid grid-cols-[80px_1fr_auto] sm:grid-cols-[100px_1fr_120px_120px] items-center py-3 sm:py-4 border-b border-white/5 gap-2 sm:gap-4">
+      <span className="text-gray-400 text-xs sm:text-sm">
         {new Date(tx.date).toLocaleDateString("th-TH", { day: "2-digit", month: "short" })}
       </span>
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <span style={{ fontWeight: 600 }}>{tx.name}</span>
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <span className="font-semibold text-white text-sm truncate">{tx.name}</span>
       </div>
-      <span
-        style={{
-          color: UI_COLORS.TEXT_SUB,
-          fontSize: "12px",
-          background: UI_COLORS.BG,
-          padding: "4px 12px",
-          borderRadius: "8px",
-          width: "fit-content",
-        }}
-      >
+      <span className="hidden sm:inline text-xs text-gray-400 bg-white/5 px-3 py-1 rounded-lg w-fit">
         {tx.category}
       </span>
       <span
-        style={{
-          color: tx.type === "income" ? UI_COLORS.INCOME : UI_COLORS.EXPENSE,
-          fontSize: "16px",
-          fontWeight: 800,
-          textAlign: "right",
-        }}
+        className="text-right text-sm sm:text-base font-bold"
+        style={{ color: tx.type === "income" ? "#10b981" : "#ef4444" }}
       >
         {tx.type === "income" ? "+" : "-"}฿{tx.amount.toLocaleString()}
       </span>
@@ -55,49 +33,30 @@ export function TransactionList({
   showYear?: boolean;
 }) {
   if (transactions.length === 0) {
-    return <p style={{ color: UI_COLORS.TEXT_SUB, textAlign: "center", padding: "40px 0" }}>ไม่พบรายการ</p>;
+    return <p className="text-gray-500 text-center py-10">ไม่พบรายการ</p>;
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+    <div className="flex flex-col">
       {transactions.map((tx, i) => (
         <div
           key={tx.id || i}
-          style={{
-            display: "grid",
-            gridTemplateColumns: "100px 1fr 140px 120px",
-            padding: "16px 0",
-            borderBottom: `1px solid ${UI_COLORS.BG}`,
-            alignItems: "center",
-          }}
+          className="grid grid-cols-[80px_1fr_auto] sm:grid-cols-[100px_1fr_120px_120px] items-center py-3 sm:py-4 border-b border-white/5 gap-2 sm:gap-4 hover:bg-white/5 transition-colors"
         >
-          <span style={{ color: UI_COLORS.TEXT_SUB, fontSize: "13px" }}>
+          <span className="text-gray-400 text-xs sm:text-sm">
             {new Date(tx.date).toLocaleDateString("th-TH", {
               day: "2-digit",
               month: "short",
               ...(showYear && { year: "numeric" }),
             })}
           </span>
-          <span style={{ fontWeight: 600 }}>{tx.name}</span>
-          <span
-            style={{
-              color: UI_COLORS.TEXT_SUB,
-              fontSize: "12px",
-              background: UI_COLORS.BG,
-              padding: "4px 12px",
-              borderRadius: "8px",
-              width: "fit-content",
-            }}
-          >
+          <span className="font-semibold text-white text-sm truncate">{tx.name}</span>
+          <span className="hidden sm:inline text-xs text-gray-400 bg-white/5 px-3 py-1 rounded-lg w-fit">
             {tx.category}
           </span>
           <span
-            style={{
-              color: tx.type === "income" ? UI_COLORS.INCOME : UI_COLORS.EXPENSE,
-              fontSize: "16px",
-              fontWeight: 800,
-              textAlign: "right",
-            }}
+            className="text-right text-sm sm:text-base font-bold"
+            style={{ color: tx.type === "income" ? "#10b981" : "#ef4444" }}
           >
             {tx.type === "income" ? "+" : "-"}฿{tx.amount.toLocaleString()}
           </span>

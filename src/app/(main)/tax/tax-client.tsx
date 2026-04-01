@@ -1,11 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { UI_COLORS, cardStyle as baseCardStyle, pageContainerStyle } from "@/lib/constants";
 import { calculateTax, TAX_BRACKETS_DISPLAY } from "@/services/tax.service";
-import { PageHeader } from "@/app/_components/page-header";
-
-const { BG: BG_COLOR, CARD_BG, BORDER: BORDER_COLOR, TEXT_MAIN, TEXT_SUB, THEME: THEME_COLOR } = UI_COLORS;
+import "@/app/_components/GlobalLayout.css";
 
 export function TaxClient({ userId }: { userId: string }) {
   const [fields, setFields] = useState({
@@ -23,57 +20,50 @@ export function TaxClient({ userId }: { userId: string }) {
 
   const taxBrackets = TAX_BRACKETS_DISPLAY;
 
-  const fieldDefs = [
+  const fieldDefs: { key: string; label: string; isIncome?: boolean }[] = [
     { key: "annualIncome", label: "รายได้ต่อปี", isIncome: true },
     { key: "personalDeduction", label: "ค่าลดหย่อนส่วนตัว" },
     { key: "lifeInsurance", label: "เบี้ยประกันชีวิต" },
-    { key: "ssfRmf", label: "กองทุน SSF/RMF" },
-    { key: "homeLoanInterest", label: "ดอกเบี้ยบ้าน" },
-    { key: "donation", label: "เงินบริจาค" },
+    { key: "ssfRmf", label: "กองทุน SSF/RMF (บาท)" },
+    { key: "homeLoanInterest", label: "ดอกเบี้ยบ้าน (บาท)" },
+    { key: "donation", label: "เงินบริจาค (บาท)" },
   ];
 
-  const cardStyle = {
-    ...baseCardStyle,
-    padding: "32px",
+  const handleReset = () => {
+    setAnnualIncome(0);
+    setFields({ personalDeduction: 60000, lifeInsurance: 0, ssfRmf: 0, homeLoanInterest: 0, donation: 0 });
   };
 
   return (
-    <div style={pageContainerStyle}>
-      <PageHeader title="คำนวณภาษี" subtitle="ประมาณการภาษีเงินได้บุคคลธรรมดาและจัดการค่าลดหย่อน" />
+    <div className="p-4 sm:p-6 lg:p-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+        {/* Left: Form */}
+        <div className="glass-card p-8">
+          <div className="page-title mb-8" style={{ fontSize: "28px" }}>
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              style={{ marginRight: "12px" }}
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <line x1="3" y1="9" x2="21" y2="9" />
+              <line x1="9" y1="21" x2="9" y2="9" />
+            </svg>
+            <span>รายได้และค่าลดหย่อน</span>
+          </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
-        <div style={cardStyle}>
-          <h3
-            style={{
-              fontSize: "18px",
-              fontWeight: 700,
-              marginBottom: "24px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <span>📝</span> รายได้และค่าลดหย่อน
-          </h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+          <div className="space-y-6">
             {fieldDefs.map((f) => (
-              <div key={f.key}>
-                <label
-                  style={{
-                    color: TEXT_SUB,
-                    fontSize: "12px",
-                    fontWeight: 700,
-                    display: "block",
-                    marginBottom: "8px",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.5px",
-                  }}
-                >
-                  {f.label}
-                </label>
+              <div key={f.key} className="form-group">
+                <label>{f.label}</label>
                 <input
                   type="number"
-                  placeholder="0"
+                  className="form-input"
+                  placeholder="ระบุจำนวนเงิน"
                   value={f.isIncome ? annualIncome || "" : (fields as Record<string, number>)[f.key] || ""}
                   onChange={(e) => {
                     const val = parseFloat(e.target.value) || 0;
@@ -83,99 +73,107 @@ export function TaxClient({ userId }: { userId: string }) {
                       setFields((prev) => ({ ...prev, [f.key]: val }));
                     }
                   }}
-                  style={{
-                    width: "100%",
-                    background: BG_COLOR,
-                    border: `1px solid ${BORDER_COLOR}`,
-                    borderRadius: "12px",
-                    padding: "14px 16px",
-                    color: TEXT_MAIN,
-                    fontSize: "15px",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
                 />
               </div>
             ))}
           </div>
+
+          <div className="mt-10 pt-4 border-t border-white/10 text-center">
+            <p className="text-xs text-gray-500">กรอกข้อมูลให้ถูกต้อง เพื่อความแม่นยำของระบบ</p>
+          </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          <div
-            style={{
-              ...cardStyle,
-              textAlign: "center",
-              background: `linear-gradient(135deg, ${CARD_BG} 0%, #f7fee7 100%)`,
-            }}
-          >
-            <p style={{ color: TEXT_SUB, fontSize: "14px", fontWeight: 600, marginBottom: "12px" }}>
-              ภาษีที่ต้องชำระ (ประมาณการ)
-            </p>
-            <h2
-              style={{
-                color: TEXT_MAIN,
-                fontSize: "56px",
-                fontWeight: 900,
-                letterSpacing: "-2px",
-                marginBottom: "8px",
-              }}
-            >
-              ฿{tax.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </h2>
-            <div
-              style={{ display: "inline-block", background: THEME_COLOR, padding: "4px 16px", borderRadius: "99px" }}
-            >
-              <p style={{ color: "#fff", fontSize: "13px", fontWeight: 800 }}>
+        {/* Right: Result + Table */}
+        <div className="flex flex-col gap-6">
+          <div className="glass-card p-8">
+            <div className="text-center mb-8">
+              <p className="text-gray-400 text-lg mb-2">ภาษีที่ต้องชำระ (ประมาณการ)</p>
+              <h3 className="text-5xl font-bold text-white mb-2">
+                ฿{tax.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </h3>
+              <span
+                className="inline-block px-4 py-1 rounded-full text-xs font-bold text-white"
+                style={{ background: "var(--accent-green)" }}
+              >
                 อัตราภาษีที่แท้จริง {effectiveRate.toFixed(2)}%
-              </p>
+              </span>
             </div>
-            <div style={{ marginTop: "16px", display: "flex", justifyContent: "center", gap: "24px" }}>
-              <div>
-                <p style={{ color: TEXT_SUB, fontSize: "11px" }}>รายได้สุทธิ</p>
-                <p style={{ fontWeight: 700 }}>฿{taxableIncome.toLocaleString()}</p>
+
+            {/* Summary row */}
+            <div className="flex justify-center gap-8 mb-8">
+              <div className="text-center">
+                <p className="text-gray-500 text-xs mb-1">รายได้สุทธิ</p>
+                <p className="text-white font-bold text-lg">฿{taxableIncome.toLocaleString()}</p>
               </div>
-              <div>
-                <p style={{ color: TEXT_SUB, fontSize: "11px" }}>ลดหย่อนรวม</p>
-                <p style={{ fontWeight: 700 }}>฿{totalDeductions.toLocaleString()}</p>
+              <div className="text-center">
+                <p className="text-gray-500 text-xs mb-1">ลดหย่อนรวม</p>
+                <p className="text-white font-bold text-lg">฿{totalDeductions.toLocaleString()}</p>
               </div>
+            </div>
+
+            <div className="border-t border-white/10 my-6" />
+
+            {/* Tax brackets table */}
+            <div className="overflow-hidden rounded-xl border border-white/10 bg-black/20">
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+                <thead>
+                  <tr style={{ background: "rgba(155, 209, 4, 0.2)" }}>
+                    <th className="p-3 text-left text-[var(--accent-green)]">เงินได้สุทธิ (บาท)</th>
+                    <th className="p-3 text-right text-[var(--accent-green)]">อัตราภาษี</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-300">
+                  {taxBrackets.map((b, i) => (
+                    <tr key={i} className="border-t border-white/5 hover:bg-white/5 transition-colors">
+                      <td className="p-3">{b.income}</td>
+                      <td className="p-3 text-right">
+                        {b.rate === "ยกเว้น" ? (
+                          <span className="inline-block px-3 py-0.5 rounded-md text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+                            ได้รับการยกเว้น
+                          </span>
+                        ) : (
+                          <span className="inline-block px-3 py-0.5 rounded-md text-xs font-bold text-gray-300 bg-white/5 border border-white/10">
+                            {b.rate}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Disclaimer */}
+            <div className="mt-6 flex gap-2 text-yellow-500/80">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="shrink-0 mt-0.5"
+              >
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <p className="text-[11px]">
+                การคำนวณนี้เป็นการประมาณการเบื้องต้นเท่านั้น กรุณาปรึกษาผู้เชี่ยวชาญด้านภาษีเพื่อความถูกต้อง
+              </p>
             </div>
           </div>
 
-          <div style={{ ...cardStyle, padding: "0", overflow: "hidden" }}>
-            <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORDER_COLOR}` }}>
-              <h3 style={{ fontSize: "15px", fontWeight: 700 }}>อัตราภาษีเงินได้บุคคลธรรมดา</h3>
-            </div>
-            <div style={{ padding: "8px 0" }}>
-              {taxBrackets.map((b, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "12px 24px",
-                    background: i % 2 === 0 ? "transparent" : "#fafafa",
-                  }}
-                >
-                  <span style={{ color: TEXT_SUB, fontSize: "13px", fontWeight: 500 }}>{b.income}</span>
-                  <span
-                    style={{
-                      color: b.rate === "ยกเว้น" ? "#10b981" : TEXT_MAIN,
-                      fontSize: "12px",
-                      fontWeight: 800,
-                      background: b.rate === "ยกเว้น" ? "#ecfdf5" : BG_COLOR,
-                      padding: "4px 12px",
-                      borderRadius: "8px",
-                      minWidth: "60px",
-                      textAlign: "center",
-                      border: `1px solid ${b.rate === "ยกเว้น" ? "#d1fae5" : BORDER_COLOR}`,
-                    }}
-                  >
-                    {b.rate}
-                  </span>
-                </div>
-              ))}
-            </div>
+          {/* Action buttons */}
+          <div className="flex gap-4">
+            <button className="btn-save flex-1 py-5 text-xl">คำนวณภาษี</button>
+            <button
+              className="btn-cancel flex-1 py-5 text-xl"
+              style={{ background: "rgba(255,255,255,0.05)" }}
+              onClick={handleReset}
+            >
+              ยกเลิก
+            </button>
           </div>
         </div>
       </div>

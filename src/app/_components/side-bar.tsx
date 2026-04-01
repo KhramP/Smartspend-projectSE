@@ -24,6 +24,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import "@/app/_components/GlobalLayout.css";
 
 const MAIN_LINKS = [
   { href: "/", icon: LayoutDashboard, label: "ภาพรวม" },
@@ -65,14 +66,12 @@ function NavItem({
       title={collapsed ? label : undefined}
       onClick={onClick}
       className={cn(
-        "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
-        collapsed ? "justify-center px-2" : "",
-        isActive
-          ? "bg-primary text-primary-foreground shadow-sm"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+        "menu-item group justify-start! mb-2! gap-3 text-sm font-medium transition-all duration-200",
+        collapsed ? "justify-center! px-2!" : "",
+        isActive ? "active" : "",
       )}
     >
-      <Icon className={cn("shrink-0", collapsed ? "size-5" : "size-4.5")} />
+      <Icon className={cn("shrink-0", collapsed ? "size-5" : "size-[18px]")} />
       {!collapsed && <span className="truncate">{label}</span>}
     </Link>
   );
@@ -81,7 +80,7 @@ function NavItem({
 function SectionLabel({ children, collapsed }: { children: React.ReactNode; collapsed?: boolean }) {
   if (collapsed) return null;
   return (
-    <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">{children}</p>
+    <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-text)]">{children}</p>
   );
 }
 
@@ -91,27 +90,40 @@ function SidebarInner({ collapsed, onNavigate }: { collapsed?: boolean; onNaviga
   return (
     <div className="flex h-full flex-col">
       {/* Logo */}
-      <div className={cn("flex items-center gap-2 px-5 py-5", collapsed && "justify-center px-3")}>
-        <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
-          S
-        </div>
-        {!collapsed && <span className="text-lg font-bold tracking-tight">SmartSpend</span>}
+      <div className={cn("logo-section !flex-row gap-3 !mb-6 px-2 pt-6", collapsed && "!justify-center")}>
+        <svg className="logo-icon !mb-0" width="32" height="32" viewBox="0 0 40 40" fill="none">
+          <rect width="40" height="40" rx="12" fill="var(--accent-green)" />
+          <text
+            x="50%"
+            y="55%"
+            textAnchor="middle"
+            dominantBaseline="central"
+            fontSize="20"
+            fontWeight="700"
+            fill="#000"
+          >
+            S
+          </text>
+        </svg>
+        {!collapsed && <span className="text-lg font-bold text-white tracking-tight">SmartSpend</span>}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-2">
-        <div className="space-y-1">
+      <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-6">
+        <div>
           <SectionLabel collapsed={collapsed}>เมนูหลัก</SectionLabel>
           {MAIN_LINKS.map((link) => (
             <NavItem key={link.href} {...link} collapsed={collapsed} onClick={onNavigate} />
           ))}
         </div>
 
-        <div className="space-y-1">
+        <div>
           <SectionLabel collapsed={collapsed}>
             <span className="flex items-center gap-1.5">
               พรีเมี่ยม
-              <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-700">PRO</span>
+              <span className="rounded-full bg-[var(--accent-gold)]/20 px-1.5 py-0.5 text-[9px] font-bold text-[var(--accent-gold)]">
+                PRO
+              </span>
             </span>
           </SectionLabel>
           {PREMIUM_LINKS.map((link) => (
@@ -119,7 +131,7 @@ function SidebarInner({ collapsed, onNavigate }: { collapsed?: boolean; onNaviga
           ))}
         </div>
 
-        <div className="space-y-1">
+        <div>
           <SectionLabel collapsed={collapsed}>บัญชี</SectionLabel>
           {ACCOUNT_LINKS.map((link) => (
             <NavItem key={link.href} {...link} collapsed={collapsed} onClick={onNavigate} />
@@ -128,17 +140,17 @@ function SidebarInner({ collapsed, onNavigate }: { collapsed?: boolean; onNaviga
       </nav>
 
       {/* User section */}
-      <div className="border-t border-border p-3">
+      <div className="border-t border-[var(--glass-border)] p-3 mt-auto">
         {isLoading ? (
           <div className={cn("flex items-center gap-3 rounded-xl px-3 py-2", collapsed && "justify-center")}>
-            <div className="size-9 animate-pulse rounded-full bg-muted" />
-            {!collapsed && <div className="h-4 w-24 animate-pulse rounded bg-muted" />}
+            <div className="size-9 animate-pulse rounded-full bg-white/10" />
+            {!collapsed && <div className="h-4 w-24 animate-pulse rounded bg-white/10" />}
           </div>
         ) : !user ? (
           <Link href="/login" onClick={onNavigate}>
             <div
               className={cn(
-                "flex items-center justify-center rounded-xl bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90",
+                "flex items-center justify-center rounded-[20px] bg-[var(--accent-green)] px-3 py-2.5 text-sm font-semibold text-black transition-all hover:brightness-110",
                 collapsed && "px-2",
               )}
             >
@@ -147,25 +159,25 @@ function SidebarInner({ collapsed, onNavigate }: { collapsed?: boolean; onNaviga
           </Link>
         ) : (
           <div className="space-y-2">
-            <div className={cn("flex items-center gap-3 rounded-xl px-3 py-2", collapsed && "justify-center px-2")}>
-              <Avatar className="size-9 shrink-0 ring-2 ring-border">
+            <div className={cn("user-profile-box", collapsed && "!justify-center !px-2 !gap-0")}>
+              <Avatar className="user-avatar size-9 shrink-0">
                 <AvatarImage src="/images/default-avatar.png" alt="Avatar" />
               </Avatar>
               {!collapsed && (
-                <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-semibold truncate">{user.name}</span>
-                  <span className="text-[11px] text-muted-foreground truncate">{user.email}</span>
+                <div className="user-details min-w-0">
+                  <span className="user-name truncate">{user.name}</span>
+                  <span className="user-plan truncate">{user.email}</span>
                 </div>
               )}
             </div>
             <button
               onClick={() => authClient.signOut()}
               className={cn(
-                "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-500/10",
+                "flex w-full items-center gap-3 rounded-[20px] px-3 py-2 text-sm font-medium text-red-400 border border-transparent transition-all hover:border-red-500/30 hover:bg-red-500/10",
                 collapsed && "justify-center px-2",
               )}
             >
-              <LogOut className="size-4.5 shrink-0" />
+              <LogOut className="size-[18px] shrink-0" />
               {!collapsed && <span>ออกจากระบบ</span>}
             </button>
           </div>
@@ -190,16 +202,16 @@ export function SSideBar() {
     <>
       {/* Mobile hamburger */}
       <button
-        className="fixed top-4 left-4 z-40 flex items-center justify-center rounded-xl border border-border bg-background p-2 shadow-sm md:hidden"
+        className="fixed top-4 left-4 z-40 flex items-center justify-center rounded-xl border border-[var(--glass-border)] bg-black/40 backdrop-blur-md p-2 shadow-lg md:hidden"
         onClick={() => setMobileOpen(true)}
       >
-        <Menu className="size-5" />
+        <Menu className="size-5 text-white" />
       </button>
 
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -207,12 +219,13 @@ export function SSideBar() {
       {/* Mobile drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-border bg-background transition-transform duration-300 ease-in-out md:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-[var(--glass-border)] transition-transform duration-300 ease-in-out md:hidden",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
+        style={{ background: "var(--sidebar-gradient)" }}
       >
         <button
-          className="absolute right-3 top-5 rounded-lg p-1 text-muted-foreground hover:text-foreground"
+          className="absolute right-3 top-5 rounded-lg p-1 text-gray-400 hover:text-white transition"
           onClick={() => setMobileOpen(false)}
         >
           <X className="size-5" />
@@ -223,18 +236,23 @@ export function SSideBar() {
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden md:flex h-screen sticky top-0 flex-col border-r border-border bg-background transition-all duration-300 ease-in-out",
-          collapsed ? "w-18" : "w-64",
+          "hidden md:flex h-screen sticky top-0 flex-col border-r border-[var(--glass-border)] transition-all duration-300 ease-in-out relative",
+          collapsed ? "w-[72px]" : "w-[240px]",
         )}
+        style={{ background: "var(--sidebar-gradient)" }}
       >
         <SidebarInner collapsed={collapsed} />
 
         {/* Collapse toggle */}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute -right-3 top-7 z-10 flex size-6 items-center justify-center rounded-full border border-border bg-background shadow-sm transition-colors hover:bg-muted"
+          className="absolute -right-3 top-7 z-10 flex size-6 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[#1a1a1a] shadow-md transition-colors hover:bg-white/10"
         >
-          {collapsed ? <ChevronRight className="size-3.5" /> : <ChevronLeft className="size-3.5" />}
+          {collapsed ? (
+            <ChevronRight className="size-3.5 text-gray-400" />
+          ) : (
+            <ChevronLeft className="size-3.5 text-gray-400" />
+          )}
         </button>
       </aside>
     </>

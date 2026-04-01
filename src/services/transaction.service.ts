@@ -2,6 +2,7 @@
 // Orchestrates Repository calls and applies business rules
 
 import { TransactionRepository } from "@/repositories/transaction.repository";
+import { BudgetRepository } from "@/repositories/budget.repository";
 import { getMonthDateRange, getTodayDateRange, getCurrentDayOfMonth } from "@/lib/date-utils";
 
 export const TransactionService = {
@@ -162,15 +163,30 @@ export const TransactionService = {
 
   async getBudgetPageData(userId: string) {
     const monthRange = getMonthDateRange();
-    const categorySpending = await TransactionRepository.groupByCategory(userId, "expense", monthRange);
+    const [categorySpending, budgets] = await Promise.all([
+      TransactionRepository.groupByCategory(userId, "expense", monthRange),
+      BudgetRepository.findByUser(userId),
+    ]);
+
+    const budgetMap = new Map(budgets.map((b) => [b.category, b.amount]));
     const totalExpense = categorySpending.reduce((s, c) => s + (c._sum.amount || 0), 0);
 
+    // Merge spending with budgets; include budget-only categories with 0 used
+    const spendingMap = new Map(categorySpending.map((c) => [c.category || "อื่นๆ", c._sum.amount || 0]));
+    const allCategories = new Set([...spendingMap.keys(), ...budgetMap.keys()]);
+
+    const merged = Array.from(allCategories).map((name) => ({
+      name,
+      used: spendingMap.get(name) || 0,
+      budget: budgetMap.get(name) || 0,
+    }));
+
+    const totalBudget = merged.reduce((s, c) => s + c.budget, 0);
+
     return {
-      categorySpending: categorySpending.map((c) => ({
-        name: c.category || "อื่นๆ",
-        used: c._sum.amount || 0,
-      })),
+      categorySpending: merged,
       totalUsed: totalExpense,
+      totalBudget,
     };
   },
 

@@ -4,10 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateUserTheme } from "@/app/actions/transaction";
 import { useTheme } from "@/app/theme-provider";
-import { UI_COLORS, cardStyle as baseCardStyle, pageContainerStyle } from "@/lib/constants";
-import { PageHeader } from "@/app/_components/page-header";
-
-const { BG: BG_COLOR, BORDER: BORDER_COLOR, TEXT_MAIN, TEXT_SUB } = UI_COLORS;
+import "@/app/_components/GlobalLayout.css";
 
 export function ThemeClient({
   currentTheme,
@@ -41,170 +38,131 @@ export function ThemeClient({
   const handleSave = async () => {
     setSaving(true);
     await updateUserTheme({ userId, themeColor: selectedColor, themeMode: selectedMode });
-
-    // Apply theme via context (propagates to all components)
     setTheme(selectedMode, selectedColor);
-
     setSaving(false);
     router.refresh();
   };
 
-  const containerCardStyle = {
-    ...baseCardStyle,
-    padding: "32px",
-  };
-
   return (
-    <div style={pageContainerStyle}>
-      <PageHeader title="ปรับแต่งธีม" subtitle="เลือกสไตล์และสีสันที่สะท้อนความเป็นตัวคุณ" />
+    <div className="p-6 md:p-10 flex justify-center">
+      <div className="glass-card w-full max-w-3xl p-6 md:p-8 shadow-2xl rounded-3xl border border-white/10">
+        <p className="text-gray-400 mb-10 text-center text-lg">เลือกสไตล์และสีสันที่สะท้อนความเป็นตัวคุณ</p>
 
-      <div style={{ maxWidth: "720px", display: "flex", flexDirection: "column", gap: "24px" }}>
-        {/* Mode selection */}
-        <div style={containerCardStyle}>
-          <h3
-            style={{
-              fontSize: "16px",
-              fontWeight: 700,
-              marginBottom: "24px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            โหมดการแสดงผล
-          </h3>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-            {modes.map((m) => (
-              <div
-                key={m.name}
-                onClick={() => setSelectedMode(m.name)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "12px",
-                  padding: "24px",
-                  borderRadius: "16px",
-                  cursor: "pointer",
-                  background: selectedMode === m.name ? `${selectedColor}15` : BG_COLOR,
-                  border: `2px solid ${selectedMode === m.name ? selectedColor : BORDER_COLOR}`,
-                  transition: "all 0.2s",
-                }}
-              >
-                <span style={{ fontSize: "28px" }}>{m.icon}</span>
-                <span
-                  style={{ fontSize: "16px", fontWeight: 700, color: selectedMode === m.name ? TEXT_MAIN : TEXT_SUB }}
+        <div className="space-y-12">
+          {/* Mode selection */}
+          <section>
+            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+              <div className="w-2 h-6 rounded-full" style={{ background: selectedColor }} />
+              โหมดการแสดงผล
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              {modes.map((m) => (
+                <div
+                  key={m.name}
+                  onClick={() => setSelectedMode(m.name)}
+                  className={`flex items-center justify-center gap-3 p-6 rounded-2xl cursor-pointer transition-all duration-200 border-2 ${
+                    selectedMode === m.name
+                      ? "bg-white/10 border-white/20"
+                      : "bg-black/20 border-transparent hover:bg-white/5 hover:border-white/10"
+                  }`}
                 >
-                  {m.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+                  <span className="text-3xl">{m.icon}</span>
+                  <span className={`text-base font-bold ${selectedMode === m.name ? "text-white" : "text-gray-400"}`}>
+                    {m.label}
+                  </span>
+                  {/* Custom radio */}
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ml-auto ${
+                      selectedMode === m.name ? "border-white" : "border-gray-600"
+                    }`}
+                  >
+                    {selectedMode === m.name && (
+                      <div className="w-3.5 h-3.5 rounded-full" style={{ background: selectedColor }} />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
 
-        {/* Color selection */}
-        <div style={containerCardStyle}>
-          <h3
-            style={{
-              fontSize: "16px",
-              fontWeight: 700,
-              marginBottom: "24px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <span style={{ color: selectedColor }}>●</span> สีหลักของแอป
-          </h3>
-          <div style={{ display: "flex", gap: "18px", flexWrap: "wrap" }}>
-            {accentColors.map((c) => (
-              <div
-                key={c.value}
-                onClick={() => setSelectedColor(c.value)}
-                style={{
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "16px",
-                  background: c.value,
-                  cursor: "pointer",
-                  border: selectedColor === c.value ? "4px solid #fff" : "none",
-                  boxShadow: selectedColor === c.value ? `0 0 0 2px ${c.value}, 0 4px 12px ${c.value}40` : "none",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                  transform: selectedColor === c.value ? "scale(1.1)" : "scale(1)",
-                }}
-              >
-                {selectedColor === c.value && (
-                  <span style={{ color: "#fff", fontWeight: 900, fontSize: "20px" }}>✓</span>
-                )}
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop: "16px" }}>
-            <p style={{ color: TEXT_SUB, fontSize: "13px" }}>
+          {/* Color selection */}
+          <section>
+            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+              <div className="w-2 h-6 rounded-full" style={{ background: selectedColor }} />
+              สีหลักของแอป (Accent Color)
+            </h3>
+            <div className="flex flex-wrap gap-5 justify-center">
+              {accentColors.map((c) => (
+                <div
+                  key={c.value}
+                  onClick={() => setSelectedColor(c.value)}
+                  className={`w-14 h-14 rounded-full cursor-pointer transition-all duration-300 flex items-center justify-center border-4 ${
+                    selectedColor === c.value
+                      ? "border-white scale-110 shadow-lg"
+                      : "border-transparent hover:border-white/30 hover:scale-105"
+                  }`}
+                  style={{ background: c.value }}
+                  title={c.name}
+                >
+                  {selectedColor === c.value && (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                      <path d="M20 6L9 17L4 12" />
+                    </svg>
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="text-center text-gray-400 text-sm mt-4">
               เลือก: {accentColors.find((c) => c.value === selectedColor)?.name || selectedColor}
             </p>
-          </div>
-        </div>
+          </section>
 
-        {/* Preview */}
-        <div style={containerCardStyle}>
-          <h3 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "20px" }}>ตัวอย่าง</h3>
-          <div
-            style={{
-              background: selectedMode === "dark" ? "#1a1a2e" : BG_COLOR,
-              padding: "24px",
-              borderRadius: "16px",
-              border: `1px dashed ${BORDER_COLOR}`,
-            }}
-          >
-            <div style={{ display: "flex", gap: "12px", alignItems: "center", marginBottom: "16px" }}>
-              <div style={{ width: "40px", height: "40px", background: selectedColor, borderRadius: "12px" }} />
-              <div>
-                <p style={{ color: selectedMode === "dark" ? "#fff" : TEXT_MAIN, fontSize: "14px", fontWeight: 700 }}>
-                  ตัวอย่างหัวข้อ
-                </p>
-                <p style={{ color: selectedMode === "dark" ? "#aaa" : TEXT_SUB, fontSize: "12px" }}>
-                  คำอธิบายรายละเอียด
-                </p>
-              </div>
-            </div>
-            <button
-              style={{
-                padding: "10px 24px",
-                background: selectedColor,
-                color: "#fff",
-                border: "none",
-                borderRadius: "10px",
-                fontWeight: 700,
-                fontSize: "13px",
-              }}
+          {/* Preview */}
+          <section>
+            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+              <div className="w-2 h-6 rounded-full" style={{ background: selectedColor }} />
+              ตัวอย่าง
+            </h3>
+            <div
+              className={`p-6 rounded-2xl border border-dashed border-white/10 ${
+                selectedMode === "dark" ? "bg-[#1a1a2e]" : "bg-black/20"
+              }`}
             >
-              ปุ่มตัวอย่าง
-            </button>
-          </div>
+              <div className="flex gap-3 items-center mb-4">
+                <div className="w-10 h-10 rounded-xl" style={{ background: selectedColor }} />
+                <div>
+                  <p className={`text-sm font-bold ${selectedMode === "dark" ? "text-white" : "text-white"}`}>
+                    ตัวอย่างหัวข้อ
+                  </p>
+                  <p className={`text-xs ${selectedMode === "dark" ? "text-gray-400" : "text-gray-400"}`}>
+                    คำอธิบายรายละเอียด
+                  </p>
+                </div>
+              </div>
+              <button
+                className="px-6 py-2.5 text-white text-sm font-bold rounded-xl transition-transform hover:scale-105"
+                style={{ background: selectedColor }}
+              >
+                ปุ่มตัวอย่าง
+              </button>
+            </div>
+          </section>
         </div>
 
-        {/* Save */}
-        <div style={{ display: "flex", gap: "16px", marginTop: "8px" }}>
+        {/* Action buttons */}
+        <div className="mt-16 pt-8 border-t border-white/10 flex gap-4 justify-center">
           <button
             onClick={handleSave}
             disabled={saving}
+            className="btn-save shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
-              flex: 2,
-              padding: "20px",
+              width: "220px",
+              padding: "18px",
+              fontSize: "16px",
+              borderRadius: "40px",
               background: selectedColor,
               color: "#fff",
-              border: "none",
-              borderRadius: "18px",
-              fontWeight: 800,
-              fontSize: "16px",
-              cursor: saving ? "not-allowed" : "pointer",
-              opacity: saving ? 0.6 : 1,
-              transition: "all 0.2s",
-              boxShadow: `0 10px 15px -3px rgba(0,0,0,0.1)`,
+              fontWeight: "bold",
             }}
           >
             {saving ? "กำลังบันทึก..." : "บันทึกการปรับแต่งธีม"}
@@ -214,17 +172,7 @@ export function ThemeClient({
               setSelectedColor(currentTheme.themeColor);
               setSelectedMode(currentTheme.themeMode);
             }}
-            style={{
-              flex: 1,
-              padding: "20px",
-              background: "transparent",
-              border: `1px solid ${BORDER_COLOR}`,
-              borderRadius: "18px",
-              color: TEXT_SUB,
-              fontWeight: 700,
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
+            className="px-8 py-4 rounded-[40px] border border-gray-600 text-gray-400 font-bold text-base hover:bg-white/5 hover:text-white transition-all duration-200"
           >
             คืนค่าเริ่มต้น
           </button>

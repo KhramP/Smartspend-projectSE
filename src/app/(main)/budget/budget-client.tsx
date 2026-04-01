@@ -1,143 +1,141 @@
 "use client";
 
-import {
-  UI_COLORS,
-  cardStyle as baseCardStyle,
-  pageContainerStyle,
-  getCategoryColor,
-  getCategoryIcon,
-} from "@/lib/constants";
-import { PageHeader } from "@/app/_components/page-header";
-
-const { BG: BG_COLOR, BORDER: BORDER_COLOR, TEXT_MAIN, TEXT_SUB } = UI_COLORS;
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { getCategoryIcon } from "@/lib/constants";
+import { AddBudgetModal } from "@/app/_components/add-budget-modal";
+import "@/app/_components/GlobalLayout.css";
 
 type BudgetPageData = {
-  categorySpending: { name: string; used: number }[];
+  categorySpending: { name: string; used: number; budget: number }[];
   totalUsed: number;
+  totalBudget: number;
 };
 
-export function BudgetClient({ data }: { data: BudgetPageData }) {
-  const totalBudget = Math.max(data.totalUsed * 1.3, 1);
-  const remaining = totalBudget - data.totalUsed;
-  const overallPercent = (data.totalUsed / totalBudget) * 100;
+export function BudgetClient({ data, userId }: { data: BudgetPageData; userId: string }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
-  const cardStyle = {
-    ...baseCardStyle,
-    padding: "32px",
+  const totalBudget = data.totalBudget > 0 ? data.totalBudget : Math.max(data.totalUsed * 1.3, 1);
+  const remaining = totalBudget - data.totalUsed;
+  const overallPercent = totalBudget > 0 ? (data.totalUsed / totalBudget) * 100 : 0;
+
+  const handleSaved = () => {
+    router.refresh();
   };
 
   return (
-    <div style={pageContainerStyle}>
-      <PageHeader title="งบประมาณ" subtitle="จัดการและติดตามการใช้จ่ายตามเป้าหมาย" />
-
-      <div style={cardStyle}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0", marginBottom: "32px" }}>
-          {[
-            { label: "ยอดใช้จ่ายรวม", value: `฿${data.totalUsed.toLocaleString()}`, color: "#e11d48" },
-            { label: "คงเหลือ (ประมาณ)", value: `฿${Math.round(remaining).toLocaleString()}`, color: "#10b981" },
-            { label: "จำนวนหมวดหมู่", value: `${data.categorySpending.length}`, color: TEXT_MAIN },
-          ].map((item, i) => (
-            <div
-              key={item.label}
-              style={{ padding: "0 40px", borderLeft: i > 0 ? `1px solid ${BORDER_COLOR}` : "none" }}
+    <div className="p-4 sm:p-6 lg:p-10">
+      {/* Top row: overview + donut */}
+      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 mb-6">
+        {/* Left: overview card */}
+        <div className="glass-card p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-medium text-white">ภาพรวมงบประมาณเดือนนี้</h3>
+            <button
+              className="btn-premium hover:bg-white/10 transition"
+              style={{ borderRadius: "20px", padding: "5px 15px" }}
+              onClick={() => setIsModalOpen(true)}
             >
-              <p
-                style={{
-                  color: TEXT_SUB,
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  marginBottom: "8px",
-                  textTransform: "uppercase",
-                  letterSpacing: "1px",
-                }}
-              >
-                {item.label}
-              </p>
-              <p style={{ color: item.color, fontSize: "32px", fontWeight: 800 }}>{item.value}</p>
+              ตั้งงบใหม่
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="stat-card bg-black/20 rounded-xl p-4 text-center border border-white/5">
+              <p className="text-xs text-gray-400 mb-1">งบรวม</p>
+              <h4 className="text-xl font-bold">฿{Math.round(totalBudget).toLocaleString()}</h4>
             </div>
-          ))}
+            <div className="stat-card bg-black/20 rounded-xl p-4 text-center border border-white/5">
+              <p className="text-xs text-gray-400 mb-1">ใช้ไปแล้ว</p>
+              <h4 className="text-xl font-bold text-red-400">฿{data.totalUsed.toLocaleString()}</h4>
+            </div>
+            <div className="stat-card bg-black/20 rounded-xl p-4 text-center border border-white/5">
+              <p className="text-xs text-gray-400 mb-1">คงเหลือ</p>
+              <h4 className="text-xl font-bold text-[var(--accent-green)]">
+                ฿{Math.round(remaining).toLocaleString()}
+              </h4>
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <div className="flex justify-between text-xs text-gray-400 mb-2">
+              <span>ภาพรวม {overallPercent.toFixed(1)}% ของงบทั้งหมด</span>
+            </div>
+            <div className="gold-progress-bar" style={{ height: "12px" }}>
+              <div className="gold-progress-fill" style={{ width: `${Math.min(overallPercent, 100)}%` }}></div>
+            </div>
+          </div>
         </div>
 
-        <div style={{ background: BG_COLOR, padding: "24px", borderRadius: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px", alignItems: "center" }}>
-            <span style={{ color: TEXT_MAIN, fontSize: "14px", fontWeight: 700 }}>ภาพรวมการใช้งบเดือนนี้</span>
-            <span
-              style={{
-                background: overallPercent > 80 ? "#fff1f2" : "#f7fee7",
-                color: overallPercent > 80 ? "#e11d48" : "#4d7c0f",
-                padding: "4px 12px",
-                borderRadius: "10px",
-                fontSize: "13px",
-                fontWeight: 800,
-              }}
-            >
-              {overallPercent.toFixed(1)}%
-            </span>
-          </div>
-          <div style={{ height: "14px", background: BORDER_COLOR, borderRadius: "10px", overflow: "hidden" }}>
-            <div
-              style={{
-                width: `${Math.min(overallPercent, 100)}%`,
-                height: "100%",
-                background: overallPercent > 80 ? "#e11d48" : "#000",
-                borderRadius: "10px",
-              }}
-            />
+        {/* Right: donut chart */}
+        <div className="glass-card p-6 flex flex-col items-center justify-center">
+          <h3 className="text-sm font-medium text-gray-400 mb-4 self-start">สัดส่วนงบที่ใช้</h3>
+          <div className="relative w-40 h-40 rounded-full border-[10px] border-gray-700 flex items-center justify-center">
+            <div className="text-center">
+              <span className="text-3xl font-bold text-white">{Math.round(overallPercent)}%</span>
+              <p className="text-[10px] text-gray-400">ใช้ไปแล้ว</p>
+            </div>
+            <div className="absolute inset-[-10px] rounded-full border-[10px] border-transparent border-t-[var(--accent-gold)] border-r-[var(--accent-gold)] transform rotate-45"></div>
           </div>
         </div>
       </div>
 
-      <h2 style={{ fontSize: "18px", fontWeight: 700, marginTop: "40px", marginBottom: "20px" }}>
-        งบประมาณแยกตามหมวดหมู่
-      </h2>
-
+      {/* Bottom row: category budget cards */}
       {data.categorySpending.length === 0 ? (
-        <p style={{ color: TEXT_SUB, textAlign: "center", padding: "40px 0" }}>ไม่มีข้อมูลการใช้จ่ายเดือนนี้</p>
+        <p className="text-gray-500 text-center py-10">ไม่มีข้อมูลการใช้จ่ายเดือนนี้</p>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {data.categorySpending.map((b) => {
-            const color = getCategoryColor(b.name);
             const icon = getCategoryIcon(b.name);
+            const catBudget = b.budget > 0 ? b.budget : Math.max(b.used * 1.3, 1);
+            const percent = catBudget > 0 ? (b.used / catBudget) * 100 : 0;
+            const isOver = percent > 100;
+            const hasBudget = b.budget > 0;
 
             return (
-              <div key={b.name} style={{ ...cardStyle, padding: "24px" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    marginBottom: "24px",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "48px",
-                      height: "48px",
-                      background: `${color}15`,
-                      borderRadius: "14px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "24px",
-                    }}
-                  >
-                    {icon}
+              <div key={b.name} className="glass-card p-5 relative overflow-hidden">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h4 className="text-white font-medium flex items-center gap-2">
+                      <span>{icon}</span> {b.name}
+                    </h4>
+                    <p className="text-[10px] text-gray-400">{hasBudget ? "งบเดือน" : "ยังไม่ตั้งงบ"}</p>
                   </div>
-                  <p style={{ color: TEXT_MAIN, fontWeight: 800, fontSize: "16px" }}>{b.name}</p>
+                  <div className={`text-sm font-bold ${isOver ? "text-red-500" : "text-[var(--accent-green)]"}`}>
+                    ใช้ไป {percent.toFixed(0)}%
+                  </div>
                 </div>
-                <div style={{ marginBottom: "20px" }}>
-                  <span style={{ color: TEXT_MAIN, fontSize: "24px", fontWeight: 800 }}>
-                    ฿{b.used.toLocaleString()}
-                  </span>
+
+                <div className="space-y-1 mb-4">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400">ใช้ไป</span>
+                    <span className="text-white font-semibold">฿{b.used.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-xs border-t border-white/5 pt-1">
+                    <span className="text-gray-400">งบ</span>
+                    <span className="text-gray-500">฿{Math.round(catBudget).toLocaleString()}</span>
+                  </div>
                 </div>
-                <div style={{ height: "8px", background: "#f1f1f5", borderRadius: "10px", overflow: "hidden" }}>
-                  <div style={{ width: "100%", height: "100%", background: color, borderRadius: "10px" }} />
+
+                <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${isOver ? "bg-red-500" : "bg-[var(--accent-gold)]"}`}
+                    style={{ width: `${Math.min(percent, 100)}%` }}
+                  ></div>
                 </div>
               </div>
             );
           })}
         </div>
       )}
+
+      <AddBudgetModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        userId={userId}
+        onSaved={handleSaved}
+      />
     </div>
   );
 }

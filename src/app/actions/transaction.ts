@@ -5,6 +5,7 @@
 
 import { TransactionService } from "@/services/transaction.service";
 import { UserService } from "@/services/user.service";
+import { BudgetService } from "@/services/budget.service";
 
 // ─── Transaction Actions ──────────────────────────────────────
 
@@ -80,4 +81,18 @@ export async function getUserSettings({ userId }: { userId: string }) {
 
 export async function updateUserSettings({ userId, name }: { userId: string; name: string }) {
   return UserService.updateSettings(userId, name);
+}
+
+// ─── Budget Actions ───────────────────────────────────────────
+
+export async function createBudget({ userId, category, amount }: { userId: string; category: string; amount: number }) {
+  return BudgetService.createOrUpdateBudget({ userId, category, amount });
+}
+
+export async function getUserBudgets({ userId }: { userId: string }) {
+  return BudgetService.getUserBudgets(userId);
+}
+
+export async function deleteBudget({ userId, category }: { userId: string; category: string }) {
+  return BudgetService.deleteBudget(userId, category);
 }
