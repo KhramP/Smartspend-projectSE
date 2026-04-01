@@ -37,6 +37,10 @@ export async function GET() {
     const userId = authResult.user.id;
     const accountInfo = await getUserAccountInfo(userId);
 
+    if (!accountInfo) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     return NextResponse.json(accountInfo);
   } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

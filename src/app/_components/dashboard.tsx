@@ -68,12 +68,13 @@ export function DashBoard({
   });
 
   // 7-day view
-  const dayLabels = ["จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส.", "อา."];
   const sevenDaysAgo = new Date(now);
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-  const data7Days = dayLabels.map((label, i) => {
+  const thDayNames = ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."];
+  const data7Days = Array.from({ length: 7 }, (_, i) => {
     const targetDate = new Date(sevenDaysAgo);
     targetDate.setDate(targetDate.getDate() + i);
+    const label = thDayNames[targetDate.getDay()];
     const dayTxns = transactions.filter((t) => {
       const d = new Date(t.date);
       return d.toDateString() === targetDate.toDateString();

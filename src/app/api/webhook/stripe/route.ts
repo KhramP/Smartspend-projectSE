@@ -32,5 +32,17 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  if (event.type === "checkout.session.async_payment_succeeded") {
+    const session = event.data.object;
+    const customerId = session.customer as string;
+
+    if (customerId) {
+      await prisma.user.updateMany({
+        where: { stripeCustomerId: customerId },
+        data: { plan: "PRO" },
+      });
+    }
+  }
+
   return NextResponse.json({ received: true });
 }

@@ -16,7 +16,7 @@ export const TransactionService = {
     note?: string;
     userId: string;
   }) {
-    if (!input.amount || !input.name || !input.type || !input.category || !input.date) {
+    if (!input.name || !input.type || !input.category || !input.date) {
       return { error: "กรุณากรอกข้อมูลให้ครบถ้วน" };
     }
     if (input.amount <= 0) {
@@ -34,6 +34,10 @@ export const TransactionService = {
 
   async getRecentTransactions(userId: string) {
     return TransactionRepository.findRecentByUser(userId, 10);
+  },
+
+  async getYearTransactions(userId: string) {
+    return TransactionRepository.findByUserAndYear(userId, new Date().getFullYear());
   },
 
   async getDashboardData(userId: string) {
@@ -242,8 +246,20 @@ export const TransactionService = {
     if (input.amount !== undefined && input.amount <= 0) {
       return { error: "จำนวนเงินต้องมากกว่า 0" };
     }
-    const data: Record<string, unknown> = { ...input };
-    if (input.date) data.date = new Date(input.date);
+    const data: {
+      amount?: number;
+      name?: string;
+      type?: string;
+      category?: string;
+      date?: Date;
+      note?: string | null;
+    } = {};
+    if (input.amount !== undefined) data.amount = input.amount;
+    if (input.name !== undefined) data.name = input.name;
+    if (input.type !== undefined) data.type = input.type;
+    if (input.category !== undefined) data.category = input.category;
+    if (input.date !== undefined) data.date = new Date(input.date);
+    if (input.note !== undefined) data.note = input.note || null;
     const transaction = await TransactionRepository.updateById(id, userId, data);
     return { success: true, transaction };
   },

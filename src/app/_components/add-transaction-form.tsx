@@ -45,10 +45,15 @@ export function AddTransactionModal({ isOpen, onClose }: AddTransactionModalProp
       return;
     }
 
+    if (!user) {
+      setError("กรุณาเข้าสู่ระบบ");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const result = await createTransaction({
-        userId: user!.id,
+        userId: user.id,
         amount: parseFloat(amount),
         name,
         type,

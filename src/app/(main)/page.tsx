@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { DashBoard } from "../_components/dashboard";
-import { getDashboardData, getRecentTransactions, getUserBudgets } from "../actions/transaction";
+import { getDashboardData, getYearTransactions, getUserBudgets } from "../actions/transaction";
 import { headers } from "next/headers";
 
 export default async function Home() {
@@ -8,7 +8,7 @@ export default async function Home() {
   const user = session?.user;
 
   const [transactions, dashboardData, budgets] = await Promise.all([
-    getRecentTransactions({ userId: user!.id }),
+    getYearTransactions({ userId: user!.id }),
     getDashboardData({ userId: user!.id }),
     getUserBudgets({ userId: user!.id }),
   ]);

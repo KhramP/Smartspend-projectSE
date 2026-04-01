@@ -70,13 +70,18 @@ export function TransactionClient({
 
   const handleEditSave = async () => {
     if (!editTx) return;
+    const parsedAmount = parseFloat(editForm.amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      setEditError("กรุณากรอกจำนวนเงินที่ถูกต้อง");
+      return;
+    }
     setSaving(true);
     setEditError("");
     const result = await updateTransaction({
       id: editTx.id,
       userId,
       name: editForm.name,
-      amount: parseFloat(editForm.amount),
+      amount: parsedAmount,
       date: editForm.date,
       category: editForm.category,
       type: editForm.type,

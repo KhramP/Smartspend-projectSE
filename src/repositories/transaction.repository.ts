@@ -69,7 +69,7 @@ export const TransactionRepository = {
       where: {
         userId,
         type,
-        date: { gte: dateRange.start },
+        date: { gte: dateRange.start, lt: dateRange.end },
       },
       _sum: { amount: true },
       _count: true,
@@ -90,6 +90,19 @@ export const TransactionRepository = {
 
     return prisma.transaction.findMany({
       where: { userId, OR: conditions },
+      orderBy: { date: "desc" },
+    });
+  },
+
+  async findByUserAndYear(userId: string, year: number) {
+    return prisma.transaction.findMany({
+      where: {
+        userId,
+        date: {
+          gte: new Date(year, 0, 1),
+          lt: new Date(year + 1, 0, 1),
+        },
+      },
       orderBy: { date: "desc" },
     });
   },
