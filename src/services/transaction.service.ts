@@ -194,4 +194,33 @@ export const TransactionService = {
     const transactions = await TransactionRepository.findByUserAndMonths(userId, months);
     return { transactions };
   },
+
+  async getYearlyIncome(userId: string) {
+    const now = new Date();
+    const yearStart = new Date(now.getFullYear(), 0, 1);
+    const yearEnd = new Date(now.getFullYear() + 1, 0, 1);
+    const result = await TransactionRepository.aggregateByType(userId, "income", {
+      start: yearStart,
+      end: yearEnd,
+    });
+    return result._sum.amount || 0;
+  },
+
+  async deleteTransaction(id: string, userId: string) {
+    return TransactionRepository.deleteById(id, userId);
+  },
+
+  async updateTransaction(
+    id: string,
+    userId: string,
+    input: { amount?: number; name?: string; type?: string; category?: string; date?: string; note?: string },
+  ) {
+    if (input.amount !== undefined && input.amount <= 0) {
+      return { error: "จำนวนเงินต้องมากกว่า 0" };
+    }
+    const data: Record<string, unknown> = { ...input };
+    if (input.date) data.date = new Date(input.date);
+    const transaction = await TransactionRepository.updateById(id, userId, data);
+    return { success: true, transaction };
+  },
 };

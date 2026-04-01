@@ -93,4 +93,21 @@ export const TransactionRepository = {
       orderBy: { date: "desc" },
     });
   },
+
+  async deleteById(id: string, userId: string) {
+    return prisma.transaction.delete({
+      where: { id, userId },
+    });
+  },
+
+  async updateById(
+    id: string,
+    userId: string,
+    data: { amount?: number; name?: string; type?: string; category?: string; date?: Date; note?: string | null },
+  ) {
+    return prisma.transaction.update({
+      where: { id, userId },
+      data,
+    });
+  },
 };

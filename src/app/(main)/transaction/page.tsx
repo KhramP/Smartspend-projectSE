@@ -8,5 +8,5 @@ export default async function TransactionPage() {
   const user = session?.user;
   const data = await getTransactionPageData({ userId: user!.id });
 
-  return <TransactionClient data={data} />;
+  return <TransactionClient data={data} userId={user!.id} />;
 }

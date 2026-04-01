@@ -5,6 +5,8 @@ import { Transaction } from "@/generated/prisma/client";
 import { getHistoryPageData } from "@/app/actions/transaction";
 import { TransactionList } from "@/app/_components/transaction-list";
 import "@/app/_components/GlobalLayout.css";
+import { pdf } from "@react-pdf/renderer";
+import { HistoryPDFDocument } from "@/app/_components/history-pdf";
 
 export function HistoryClient({ userId }: { userId: string }) {
   const months = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
@@ -19,6 +21,46 @@ export function HistoryClient({ userId }: { userId: string }) {
   };
 
   const selectedCount = Object.values(selected).filter(Boolean).length;
+
+  const formatDate = (tx: Transaction, includeYear = true) =>
+    new Date(tx.date).toLocaleDateString("th-TH", {
+      day: "2-digit",
+      month: "short",
+      ...(includeYear && { year: "numeric" }),
+    });
+
+  const downloadCSV = () => {
+    const header = "วันที่,ชื่อรายการ,หมวดหมู่,ประเภท,จำนวนเงิน (฿)\n";
+    const rows = transactions
+      .map((tx) => {
+        const date = formatDate(tx);
+        const name = `"${(tx.name ?? "").replace(/"/g, '""')}"`;
+        const category = tx.category ?? "";
+        const type = tx.type === "income" ? "รายรับ" : "รายจ่าย";
+        const amount = tx.amount.toFixed(2);
+        return `${date},${name},${category},${type},${amount}`;
+      })
+      .join("\n");
+
+    const bom = "\uFEFF";
+    const blob = new Blob([bom + header + rows], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `smartspend-history-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadPDF = async () => {
+    const blob = await pdf(<HistoryPDFDocument transactions={transactions} />).toBlob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `smartspend-history-${new Date().toISOString().slice(0, 10)}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const handleSearch = async () => {
     setLoading(true);
@@ -112,11 +154,55 @@ export function HistoryClient({ userId }: { userId: string }) {
       {/* Results */}
       {transactions.length > 0 && (
         <div className="glass-card p-8">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-white">ผลลัพธ์</h3>
-            <span className="text-sm text-gray-400 bg-white/10 px-3 py-1 rounded-full">
-              {transactions.length} รายการ
-            </span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <h3 className="text-xl font-semibold text-white">ผลลัพธ์</h3>
+              <span className="text-sm text-gray-400 bg-white/10 px-3 py-1 rounded-full">
+                {transactions.length} รายการ
+              </span>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={downloadCSV}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white transition-all cursor-pointer"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                CSV
+              </button>
+              <button
+                onClick={downloadPDF}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white transition-all cursor-pointer"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                PDF
+              </button>
+            </div>
           </div>
           <TransactionList transactions={transactions} showYear />
         </div>

@@ -7,6 +7,7 @@ import "@/app/_components/GlobalLayout.css";
 export function DashBoard({
   transactions,
   data,
+  budgets,
 }: {
   transactions: Transaction[];
   data: {
@@ -16,6 +17,7 @@ export function DashBoard({
     todayExpense: number;
     eachCategorySpendingThisMonth: { category: string; amount: number }[];
   };
+  budgets: { id: string; userId: string; category: string; amount: number }[];
 }) {
   const [period, setPeriod] = useState("1 เดือน");
 
@@ -29,12 +31,17 @@ export function DashBoard({
     color: categoryColors[idx % categoryColors.length],
   }));
 
-  // Budget data derived from category spending (use as simple display)
-  const budgetData = data.eachCategorySpendingThisMonth.slice(0, 3).map((cat) => ({
-    name: cat.category,
-    used: cat.amount,
-    total: Math.ceil((cat.amount * 1.5) / 1000) * 1000,
-  }));
+  // Budget data from real database budgets
+  const budgetMap = new Map(budgets.map((b) => [b.category, b.amount]));
+  const spendingMap = new Map(data.eachCategorySpendingThisMonth.map((c) => [c.category, c.amount]));
+  const budgetData = budgets
+    .filter((b) => b.amount > 0)
+    .slice(0, 3)
+    .map((b) => ({
+      name: b.category,
+      used: spendingMap.get(b.category) || 0,
+      total: b.amount,
+    }));
 
   // Build chart data from transactions
   const now = new Date();

@@ -18,13 +18,11 @@ const COLORS = ["#9bd104", "#ffd700", "#4CAF50", "#2196F3", "#8b5cf6", "#f43f5e"
 export function AnalyseClient({ data }: { data: AnalyseData }) {
   const [trendTab, setTrendTab] = useState("รายรับ-รายจ่าย");
   const [catTab, setCatTab] = useState("ยอดรวม");
-  const [topTab, setTopTab] = useState("ยอดรวม");
 
-  const topExpensesSorted =
-    topTab === "ครั้ง" ? [...data.topExpenses].sort((a, b) => b.count - a.count) : data.topExpenses;
-
+  const sortedCategoryStats = [...data.categoryStats].sort((a, b) => b.amount - a.amount);
   const totalExpense6m = data.categoryStats.reduce((s, c) => s + c.amount, 0);
   const totalTransactions6m = data.topExpenses.reduce((s, t) => s + t.count, 0);
+  const topCategory = sortedCategoryStats[0];
 
   // Chart configs for shadcn
   const trendChartConfig = {
@@ -177,8 +175,8 @@ export function AnalyseClient({ data }: { data: AnalyseData }) {
           {data.categoryStats.length > 0 ? (
             <>
               <p className="text-sm text-gray-400 mb-4">
-                คุณใช้จ่ายกับหมวด <span className="font-bold text-white">{data.categoryStats[0].name}</span> มากที่สุด
-                คิดเป็น {data.categoryStats[0].percent}% ของค่าใช้จ่ายทั้งหมด
+                คุณใช้จ่ายกับหมวด <span className="font-bold text-white">{topCategory.name}</span> มากที่สุด คิดเป็น{" "}
+                {topCategory.percent}% ของค่าใช้จ่ายทั้งหมด
               </p>
               <div className="flex-1 min-h-[200px]">
                 <ChartContainer
@@ -219,26 +217,15 @@ export function AnalyseClient({ data }: { data: AnalyseData }) {
 
         {/* Right: Top Expenses */}
         <div className="glass-card p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-medium text-white">Top รายจ่ายสูงสุด</h3>
-            <div className="flex border border-gray-600 rounded-lg overflow-hidden">
-              {["ยอดรวม", "ครั้ง"].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setTopTab(tab)}
-                  className={`px-4 py-1.5 text-xs ${topTab === tab ? "bg-[var(--accent-green)] text-black font-medium" : "text-gray-400 hover:text-white"}`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
+          <div className="mb-6">
+            <h3 className="text-lg font-medium text-white">Top รายรับ/รายจ่ายสูงสุด</h3>
           </div>
 
           <div className="space-y-4">
-            {topExpensesSorted.length === 0 ? (
+            {data.topExpenses.length === 0 ? (
               <p className="text-center text-gray-500 py-5">ไม่มีข้อมูล</p>
             ) : (
-              topExpensesSorted.map((item) => (
+              data.topExpenses.map((item) => (
                 <div
                   key={item.rank}
                   className="flex items-center justify-between p-4 bg-black/20 border border-gray-700 rounded-xl hover:border-gray-500 transition-colors"

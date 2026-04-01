@@ -96,3 +96,32 @@ export async function getUserBudgets({ userId }: { userId: string }) {
 export async function deleteBudget({ userId, category }: { userId: string; category: string }) {
   return BudgetService.deleteBudget(userId, category);
 }
+
+// ─── Tax Actions ──────────────────────────────────────────────
+
+export async function getYearlyIncome({ userId }: { userId: string }) {
+  return TransactionService.getYearlyIncome(userId);
+}
+
+// ─── Delete Transaction ───────────────────────────────────────
+
+export async function deleteTransaction({ id, userId }: { id: string; userId: string }) {
+  return TransactionService.deleteTransaction(id, userId);
+}
+
+export async function updateTransaction({
+  id,
+  userId,
+  ...data
+}: {
+  id: string;
+  userId: string;
+  amount?: number;
+  name?: string;
+  type?: string;
+  category?: string;
+  date?: string;
+  note?: string;
+}) {
+  return TransactionService.updateTransaction(id, userId, data);
+}

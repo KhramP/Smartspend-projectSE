@@ -4,7 +4,7 @@ import { useState } from "react";
 import { calculateTax, TAX_BRACKETS_DISPLAY } from "@/services/tax.service";
 import "@/app/_components/GlobalLayout.css";
 
-export function TaxClient({ userId }: { userId: string }) {
+export function TaxClient({ userId, yearlyIncome }: { userId: string; yearlyIncome: number }) {
   const [fields, setFields] = useState({
     personalDeduction: 60000,
     lifeInsurance: 0,
@@ -12,7 +12,7 @@ export function TaxClient({ userId }: { userId: string }) {
     homeLoanInterest: 0,
     donation: 0,
   });
-  const [annualIncome, setAnnualIncome] = useState(0);
+  const [annualIncome, setAnnualIncome] = useState(yearlyIncome);
 
   const totalDeductions = Object.values(fields).reduce((a, b) => a + b, 0);
   const taxableIncome = Math.max(annualIncome - totalDeductions, 0);
@@ -21,7 +21,7 @@ export function TaxClient({ userId }: { userId: string }) {
   const taxBrackets = TAX_BRACKETS_DISPLAY;
 
   const fieldDefs: { key: string; label: string; isIncome?: boolean }[] = [
-    { key: "annualIncome", label: "รายได้ต่อปี", isIncome: true },
+    { key: "annualIncome", label: `รายได้ต่อปี (ดึงจากระบบ: ฿${yearlyIncome.toLocaleString()})`, isIncome: true },
     { key: "personalDeduction", label: "ค่าลดหย่อนส่วนตัว" },
     { key: "lifeInsurance", label: "เบี้ยประกันชีวิต" },
     { key: "ssfRmf", label: "กองทุน SSF/RMF (บาท)" },
@@ -30,7 +30,7 @@ export function TaxClient({ userId }: { userId: string }) {
   ];
 
   const handleReset = () => {
-    setAnnualIncome(0);
+    setAnnualIncome(yearlyIncome);
     setFields({ personalDeduction: 60000, lifeInsurance: 0, ssfRmf: 0, homeLoanInterest: 0, donation: 0 });
   };
 
